@@ -11,7 +11,35 @@ datasource db {
 }
 
 model User {
-  login    String  @id()
+  id       String  @id() @default(uuid())
+  login    String
+  email    String  @unique
   password String
   role     String?
+
+  advertisments Advertisment[]
+
+  createdAt DateTime @default(now())
+}
+
+model Advertisment {
+  creator User @relation(fields: [userId], references: [id])
+
+  id     String @id() @default(uuid())
+  userId String
+
+  cost        Float
+  currency    String
+  description String
+
+  brand        String
+  model        String
+  generation   String
+  year         Int
+  mileage      Int
+  engineVolume Float
+  transmission String
+  body         String
+
+  createdAt DateTime @default(now())
 }
