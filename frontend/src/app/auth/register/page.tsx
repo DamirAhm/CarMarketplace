@@ -32,6 +32,7 @@ const fetchRegister = reatomAsync(async (ctx, body: AuthInterface) => {
 })
 
 // const PasswordRegexp = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+const EmailRegex = /^\S+@\S+\.\S+$/
 
 const LoginPage = reatomComponent(({ctx}) => {
     const methods = useForm<AuthInterface & { password_repeat: string }>();
@@ -42,6 +43,12 @@ const LoginPage = reatomComponent(({ctx}) => {
     const {navigate} = useSavedPage();
 
     const onSubmit = handleSubmit(async (data) => {
+        if (!EmailRegex.test(data.email)) {
+            setError('email', {
+                message: 'Неверный формат email'
+            })
+        }
+
         if (data.password !== data.password_repeat) {
             setFormError('Пароли не совпадают');
             setError('password_repeat', {});
@@ -74,8 +81,8 @@ const LoginPage = reatomComponent(({ctx}) => {
             <Box display={'flex'} width={'400px'} gap={'20px'}
                  flexDirection={'column'}>
                 <InputField required size={'small'} fullWidth placeholder={'Введите имя пользователя'}
-                            name={'login'}
-                            label={'Имя пользователя'}/>
+                            name={'email'}
+                            label={'Email'}/>
                 <InputField required size={'small'} placeholder={'Введите пароль'} type={'password'}
                             name={'password'}
                             label={'Пароль'}/>
