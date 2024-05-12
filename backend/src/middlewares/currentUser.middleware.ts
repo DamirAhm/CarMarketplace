@@ -21,13 +21,11 @@ export class CurrentUserMiddleware implements NestMiddleware {
 
     const { email } = await this.jwtService.verifyAsync(authCookie);
 
-    const user = await this.prismaService.user.findUnique({
+    req['user'] = await this.prismaService.user.findUnique({
       where: {
         email,
       },
     });
-
-    req['user'] = user;
     next?.();
   }
 }

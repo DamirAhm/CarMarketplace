@@ -4,6 +4,6 @@ import { AdvertismentsService } from './advertisments.service';
 
 @Module({
   controllers: [AdvertismentsController],
-  providers: [AdvertismentsService]
+  providers: [AdvertismentsService],
 })
 export class AdvertismentsModule {}
