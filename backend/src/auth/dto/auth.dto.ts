@@ -1,6 +1,7 @@
 import { IsNotEmpty, IsString } from 'class-validator';
+import { AuthInterface } from '../../../../common/interfaces/auth/auth.interface';
 
-export class AuthDto {
+export class AuthDto implements AuthInterface {
   @IsString()
   @IsNotEmpty()
   readonly login: string;
