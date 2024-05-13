@@ -8,7 +8,8 @@ export default function WithHeaderLayout({children}: PropsWithChildren) {
         minWidth={'100vw'}
         minHeight={'100vh'}>
         <Header/>
-        <Container maxWidth={'lg'}>
+        <Box height={64}/>
+        <Container maxWidth={'xl'}>
             {children}
         </Container>
     </Box>

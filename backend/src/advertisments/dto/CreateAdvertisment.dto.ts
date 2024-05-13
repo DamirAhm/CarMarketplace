@@ -64,4 +64,8 @@ export class CreateAdvertismentDto implements CreateAdvertismentInterface {
 
   @IsInt()
   readonly year: number;
+
+  @IsOptional()
+  @IsString()
+  readonly imageId?: string;
 }

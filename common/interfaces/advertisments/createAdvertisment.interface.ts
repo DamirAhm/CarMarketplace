@@ -2,7 +2,7 @@ import {Bodies, Brands, EngineTypes, Transmissions} from "../../constants/CarFea
 
 export enum Currencies {
     EUR = 'EUR',
-    RUN = 'RUB',
+    RUB = 'RUB',
     DOL = 'USD'
 }
 
@@ -19,5 +19,5 @@ export interface CreateAdvertismentInterface {
     body?: (typeof Bodies)[number];
     description?: string;
     generation?: string;
-
+    imageId?: string;
 }

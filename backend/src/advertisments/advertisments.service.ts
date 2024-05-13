@@ -7,7 +7,7 @@ import { CreateAdvertismentDto } from './dto/CreateAdvertisment.dto';
 export class AdvertismentsService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  createAdvertisment(user: User, body: CreateAdvertismentDto) {
+  createAdvertisment(user: User, { imageId, ...body }: CreateAdvertismentDto) {
     return this.prismaService.advertisment.create({
       data: {
         ...body,
@@ -16,6 +16,13 @@ export class AdvertismentsService {
             id: user.id,
           },
         },
+        pictureUrl: imageId
+          ? {
+              connect: {
+                id: imageId,
+              },
+            }
+          : undefined,
       },
     });
   }

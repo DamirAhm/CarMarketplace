@@ -29,7 +29,7 @@ export const Brands = [
     'Tank',
     'Toyota',
     'Volkswagen',
-] satisfies string[];
+];
 
 export const Bodies = [
     'Седан',
@@ -42,16 +42,16 @@ export const Bodies = [
     'Лимузин',
     'Фургон',
     'Кабриолет'
-] as const;
+];
 
 export const EngineTypes = [
     'Бензин',
     'Дизель',
     'Гибрид',
     'Электро'
-] as const;
+];
 
 export const Transmissions = [
     'Автомат',
     'Механика'
-] as const;
+];

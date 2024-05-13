@@ -5,7 +5,7 @@ export const useSavedPage = () => {
     const router = useRouter();
 
     const [savedPage, setSavedPage] = useState(() => {
-        const value = sessionStorage && sessionStorage.getItem('savedPage');
+        const value = typeof sessionStorage !== 'undefined' && sessionStorage.getItem('savedPage');
 
         return value || '/';
     });
