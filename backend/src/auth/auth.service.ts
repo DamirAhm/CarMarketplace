@@ -18,16 +18,16 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async register(response: Response, { login, password }: AuthDto) {
+  async register(response: Response, { email, password }: AuthDto) {
     const userWithSameLogin = await this.prismaService.user.findUnique({
       where: {
-        login,
+        email,
       },
     });
 
     if (userWithSameLogin) {
       throw new BadRequestException(
-        'Пользователь с таким именем уже существует',
+        'Пользователь с таким адресом уже существует',
       );
     }
 
@@ -35,30 +35,31 @@ export class AuthService {
 
     const user = await this.prismaService.user.create({
       data: {
-        login,
+        email,
+        login: email.split('@')[0],
         password: hashedPassword,
       },
     });
 
-    await this.setAuthCookie(response, login);
+    await this.setAuthCookie(response, email);
 
     return user;
   }
 
-  async login(response: Response, { login, password }: AuthDto) {
+  async login(response: Response, { email, password }: AuthDto) {
     const user = await this.prismaService.user.findUnique({
       where: {
-        login,
+        email,
       },
     });
 
     const isPasswordsIdentical = await compare(password, user?.password || '');
 
     if (!isPasswordsIdentical) {
-      throw new UnauthorizedException('Неверный логин или пароль');
+      throw new UnauthorizedException('Неверный email или пароль');
     }
 
-    await this.setAuthCookie(response, login);
+    await this.setAuthCookie(response, email);
 
     return user;
   }
@@ -71,9 +72,9 @@ export class AuthService {
     });
   }
 
-  private async setAuthCookie(response: Response, login: string) {
+  private async setAuthCookie(response: Response, email: string) {
     const jwt = await this.jwtService.signAsync({
-      login,
+      email,
     });
 
     return response.cookie(AUTH_COOKIE_NAME, jwt, {

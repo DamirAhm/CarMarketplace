@@ -1,13 +1,23 @@
 'use client'
-import {AppBar, Avatar, Button, IconButton, Menu, MenuItem, styled, Toolbar, Typography} from "@mui/material";
+import {
+    AppBar,
+    Avatar,
+    Button,
+    Container,
+    IconButton,
+    Menu,
+    MenuItem,
+    styled,
+    Toolbar,
+    Typography
+} from "@mui/material";
 import {reatomComponent, useAtom} from "@reatom/npm-react";
-import {userAtom} from "../../../atoms/user.atom";
+import {userAtom, userRequestedAtom} from "../../../atoms/user.atom";
 import {reatomAsync} from "@reatom/async";
 import {logout} from "./api/logout";
 import Link from "next/link";
 import {useSavedPage} from "../../../hooks/useSavedPage";
 import {usePathname} from "next/navigation";
-import MenuIcon from '@mui/icons-material/Menu';
 import LoginIcon from '@mui/icons-material/Login';
 import {useState} from "react";
 
@@ -23,6 +33,7 @@ const WhiteButton = styled(Button)({
 
 export const Header = reatomComponent(({ctx}) => {
     const [user] = useAtom(userAtom);
+    const [userRequested] = useAtom(userRequestedAtom);
     const [opened, setOpened] = useState(false);
 
     const handleOpen = () => {
@@ -44,55 +55,54 @@ export const Header = reatomComponent(({ctx}) => {
         fetchLogout(ctx);
     }
 
-    return <AppBar>
-        <Toolbar>
-            <IconButton
-                size="large"
-                edge="start"
-                color="inherit"
-            >
-                <MenuIcon/>
-            </IconButton>
-            <Typography variant="h6" component="div" sx={{flexGrow: 1}}>
-                Photos
-            </Typography>
-            {user ? (
-                <div>
-                    <IconButton
-                        onClick={handleOpen}
-                        size="large"
-                    >
-                        <Avatar>{user.login.slice(0, 2)}</Avatar>
-                    </IconButton>
-                    <Menu
-                        onClose={handleClose}
-                        open={opened}
-                        id="menu-appbar"
-                        anchorOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
-                        }}
-                        keepMounted
-                        transformOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
-                        }}
-                    >
-                        <MenuItem>Профиль</MenuItem>
-                        <MenuItem onClick={onLogout}>Выйти</MenuItem>
-                    </Menu>
-                </div>
-            ) : <WhiteButton
-                startIcon={<LoginIcon/>}
-                color={'primary'}
-                onClick={onLogin}>
-                <Link
-                    href={'/auth/login'}
-                >
-                    Войти
-                </Link>
-            </WhiteButton>
-            }
-        </Toolbar>
+    return <AppBar color={'info'}>
+        <Container maxWidth={'xl'}>
+            <Toolbar>
+                <Typography variant="h6" sx={{flexGrow: 1}}>
+                    Авто
+                </Typography>
+                {user ? (
+                        <div>
+                            <Link href={'/advertisements/create'}><Button variant={'contained'}>Создать
+                                объявление</Button></Link>
+                            <IconButton
+                                onClick={handleOpen}
+                                size="large"
+                            >
+                                <Avatar>{user.login.slice(0, 2)}</Avatar>
+                            </IconButton>
+                            <Menu
+                                onClose={handleClose}
+                                open={opened}
+                                id="menu-appbar"
+                                anchorOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                keepMounted
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                            >
+                                <MenuItem>Профиль</MenuItem>
+                                <MenuItem onClick={onLogout}>Выйти</MenuItem>
+                            </Menu>
+                        </div>
+                    ) :
+                    <>{userRequested ?
+                        <Link
+                            href={'/auth/login'}
+                        >
+                            <WhiteButton
+                                startIcon={<LoginIcon/>}
+                                color={'primary'}
+                                onClick={onLogin}>
+                                Войти
+                            </WhiteButton>
+                        </Link> : null}</>
+                }
+            </Toolbar>
+        </Container>
     </AppBar>
 })

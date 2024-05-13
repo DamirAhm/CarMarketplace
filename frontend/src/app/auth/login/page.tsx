@@ -31,9 +31,11 @@ const fetchLogin = reatomAsync(async (ctx, body: AuthInterface) => {
     }
 })
 
+const EmailRegex = /^\S+@\S+\.\S+$/
+
 const LoginPage = reatomComponent(({ctx}) => {
     const methods = useForm<AuthInterface>();
-    const {handleSubmit} = methods;
+    const {handleSubmit, setError} = methods;
 
     const [formError] = useAtom(loginErrorAtom);
     const [user] = useAtom(userAtom);
@@ -47,6 +49,12 @@ const LoginPage = reatomComponent(({ctx}) => {
     }, [user, navigate]);
 
     const onSubmit = handleSubmit(async (data) => {
+        if (!EmailRegex.test(data.email)) {
+            setError('email', {
+                message: 'Неверный формат email'
+            })
+        }
+
         const logined = await fetchLogin(ctx, data);
 
         if (logined) {
@@ -60,9 +68,9 @@ const LoginPage = reatomComponent(({ctx}) => {
             <Box height={'20px'}/>
             <Box display={'flex'} width={'400px'} gap={'20px'}
                  flexDirection={'column'}>
-                <InputField required size={'small'} fullWidth placeholder={'Введите имя пользователя'}
-                            name={'login'}
-                            label={'Имя пользователя'}/>
+                <InputField required type={'email'} size={'small'} fullWidth placeholder={'Введите имя пользователя'}
+                            name={'email'}
+                            label={'Email'}/>
                 <InputField required size={'small'} placeholder={'Введите пароль'} type={'password'}
                             name={'password'}
                             label={'Пароль'}/>

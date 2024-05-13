@@ -4,6 +4,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { JwtModule } from '@nestjs/jwt';
 import { UsersModule } from './users/users.module';
 import { CurrentUserMiddleware } from './middlewares/currentUser.middleware';
+import { AdvertismentsModule } from './advertisments/advertisments.module';
+import { ImagesModule } from './images/images.module';
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { CurrentUserMiddleware } from './middlewares/currentUser.middleware';
       },
     }),
     UsersModule,
+    AdvertismentsModule,
+    ImagesModule,
   ],
   controllers: [],
   providers: [],
