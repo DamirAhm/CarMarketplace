@@ -19,8 +19,10 @@ model User {
   role        String?
 
   advertisments Advertisment[]
-
-  avatar Image[]
+  feedbacks     Feedback[]
+  avatar        Image[]
+  reactions     Reaction[]
+  comments      Comments[]
 
   createdAt DateTime @default(now())
   imageId   String?
@@ -35,6 +37,72 @@ model Image {
   advertismentId String?
   user           User?         @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId         String?
+  Feedback       Feedback?     @relation(fields: [feedbackId], references: [id])
+  feedbackId     String?
+}
+
+model Reaction {
+  id String @id() @default(uuid())
+
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  feedback   Feedback @relation(fields: [feedbackId], references: [id])
+  feedbackId String
+
+  opinion String
+
+  createdAt DateTime @default(now())
+}
+
+model Comments {
+  id String @id() @default(uuid())
+
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  feedback   Feedback @relation(fields: [feedbackId], references: [id])
+  feedbackId String
+
+  text String
+
+  createdAt DateTime @default(now())
+}
+
+model Feedback {
+  id String @id() @default(uuid())
+
+  userId String
+  carId  String
+
+  user User @relation(fields: [userId], references: [id])
+  car  Car  @relation(fields: [carId], references: [id])
+
+  title  String
+  text   String
+  rating Float
+
+  imageIds  Image[]
+  reactions Reaction[]
+  comments  Comments[]
+
+  createdAt DateTime @default(now())
+}
+
+model Car {
+  id           String @id() @default(uuid())
+  brand        String
+  model        String
+  year         Int
+  engineType   String
+  transmission String
+
+  engineVolume Float?
+  body         String?
+  generation   String?
+
+  advertisements Advertisment[]
+  feedbacks      Feedback[]
+
+  @@unique([brand, model, year, engineType, transmission])
 }
 
 model Advertisment {
@@ -47,15 +115,10 @@ model Advertisment {
   currency    String
   description String @default("")
 
-  brand        String
-  model        String
-  year         Int
-  generation   String?
-  mileage      Int?
-  engineType   String?
-  engineVolume Float?
-  transmission String?
-  body         String?
+  mileage Int?
+
+  car   Car    @relation(fields: [carId], references: [id], onDelete: Cascade)
+  carId String
 
   imageIds Image[]
 

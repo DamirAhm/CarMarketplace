@@ -27,7 +27,7 @@ export class CreateAdvertismentDto implements ICreateAdvertisment {
 
   @IsOptional()
   @IsEnum(EngineTypes)
-  readonly engineType?: (typeof EngineTypes)[number];
+  readonly engineType: (typeof EngineTypes)[number];
 
   @IsNumber()
   @IsPositive()
@@ -60,7 +60,7 @@ export class CreateAdvertismentDto implements ICreateAdvertisment {
 
   @IsOptional()
   @IsEnum(Transmissions)
-  readonly transmission?: (typeof Transmissions)[number];
+  readonly transmission: (typeof Transmissions)[number];
 
   @IsInt()
   readonly year: number;

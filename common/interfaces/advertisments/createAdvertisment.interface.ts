@@ -13,9 +13,9 @@ export interface ICreateAdvertisment {
     model: string;
     year: number;
     mileage?: number
-    engineType?: (typeof EngineTypes)[number];
+    engineType: (typeof EngineTypes)[number];
     engineVolume?: number;
-    transmission?: (typeof Transmissions)[number];
+    transmission: (typeof Transmissions)[number];
     body?: (typeof Bodies)[number];
     description?: string;
     generation?: string;

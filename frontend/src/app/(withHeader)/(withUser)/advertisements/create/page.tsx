@@ -42,9 +42,10 @@ export default function CreateAdvertisementsPage() {
                         <Box height={"10px"}/>
                         <Typography variant={'h6'} color={'black'}>Характеристики</Typography>
                         <SelectField required name={'year'} label={'Год выпуска *'} options={Years}/>
+                        <SelectField required name={'engineType'} label={'Двигатель *'} options={EngineTypes}/>
+                        <SelectField required name={'transmission'} label={'Коробка передач *'}
+                                     options={Transmissions}/>
                         <SelectField name={'body'} label={'Кузов'} options={Bodies}/>
-                        <SelectField name={'engineType'} label={'Двигатель'} options={EngineTypes}/>
-                        <SelectField name={'transmission'} label={'Коробка передач'} options={Transmissions}/>
                         <InputField name={'engineVolume'} label={'Объем двигателя'} type={'number'}/>
                         <InputField name={'mileage'} label={'Пробег'} type={'number'}/>
                         <Box height={"10px"}/>

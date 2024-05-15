@@ -1,7 +1,7 @@
-import {Advertisment} from "@prisma/client";
+import {Advertisment, Car} from "@prisma/client";
 
 export interface ISearchAdvertisments extends Partial<Pick<
-    Advertisment,
+    Advertisment & Car,
     'cost' |
     'brand' |
     'model' |

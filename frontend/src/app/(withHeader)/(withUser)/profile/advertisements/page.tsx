@@ -1,13 +1,13 @@
 'use client'
 
 import {Box, Button, ButtonGroup, Modal, Paper, Typography} from "@mui/material";
-import {AdvertismentComponent, AdWithImage} from "../../../components/AdvertisementComponent";
+import {AdvertismentComponent, AdWithIncludes} from "../../../components/AdvertisementComponent";
 import React, {useEffect, useState} from "react";
 import {getMyAdvertisements} from "./api/getMyAdvertisements";
 import {deleteAdvertisement} from "./api/deleteAdvertisement";
 
 export default function MyAdvertisementsPage() {
-    const [ads, setAds] = useState<AdWithImage[] | null>(null);
+    const [ads, setAds] = useState<AdWithIncludes[] | null>(null);
 
     const [deleting, setDeleting] = useState<string | null>(null);
 

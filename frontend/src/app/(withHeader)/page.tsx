@@ -3,12 +3,12 @@
 import {Box, Typography} from "@mui/material";
 import React, {useState} from 'react';
 import {SearchForm} from "./components/SearchForm";
-import {AdvertismentComponent, AdWithImage} from "./components/AdvertisementComponent";
+import {AdvertismentComponent, AdWithIncludes} from "./components/AdvertisementComponent";
 
 export default function Page() {
-    const [advertisments, setAdvertisments] = useState<AdWithImage[] | null>(null);
+    const [advertisments, setAdvertisments] = useState<AdWithIncludes[] | null>(null);
 
-    const handleSearch = (ads: AdWithImage[]) => {
+    const handleSearch = (ads: AdWithIncludes[]) => {
         setAdvertisments(ads);
     };
 

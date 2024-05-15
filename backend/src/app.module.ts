@@ -6,6 +6,8 @@ import { UsersModule } from './users/users.module';
 import { CurrentUserMiddleware } from './middlewares/currentUser.middleware';
 import { AdvertismentsModule } from './advertisments/advertisments.module';
 import { ImagesModule } from './images/images.module';
+import { FeedbackModule } from './feedback/feedback.module';
+import { CarsModule } from './cars/cars.module';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { ImagesModule } from './images/images.module';
     UsersModule,
     AdvertismentsModule,
     ImagesModule,
+    FeedbackModule,
+    CarsModule,
   ],
   controllers: [],
   providers: [],

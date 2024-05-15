@@ -17,30 +17,37 @@ export class AdvertismentsService {
     engineVolumeTo,
     cost,
     costTo,
+    currency,
+    description,
     ...rest
   }: SearchAdvertismentsDto) {
     const ads = await this.prismaService.advertisment.findMany({
       include: {
         imageIds: true,
+        car: true,
       },
       where: {
-        mileage: {
-          lte: mileageTo,
-          gte: mileage,
-        },
+        currency,
+        description,
         cost: {
           lte: costTo,
           gte: cost,
         },
-        year: {
-          lte: yearTo,
-          gte: year,
+        mileage: {
+          lte: mileageTo,
+          gte: mileage,
         },
-        engineVolume: {
-          lte: engineVolumeTo,
-          gte: engineVolume,
+        car: {
+          year: {
+            lte: yearTo,
+            gte: year,
+          },
+          engineVolume: {
+            lte: engineVolumeTo,
+            gte: engineVolume,
+          },
+          ...rest,
         },
-        ...rest,
       },
     });
 
@@ -50,13 +57,40 @@ export class AdvertismentsService {
     }));
   }
 
-  createAdvertisment(user: User, { imageId, ...body }: ICreateAdvertisment) {
+  createAdvertisment(
+    user: User,
+    {
+      imageId,
+      cost,
+      currency,
+      mileage,
+      description,
+      ...body
+    }: ICreateAdvertisment,
+  ) {
     return this.prismaService.advertisment.create({
       data: {
-        ...body,
+        cost,
+        currency,
+        mileage,
+        description,
         creator: {
           connect: {
             id: user.id,
+          },
+        },
+        car: {
+          connectOrCreate: {
+            where: {
+              brand_model_year_engineType_transmission: {
+                brand: body.brand,
+                model: body.model,
+                year: body.year,
+                engineType: body.engineType,
+                transmission: body.transmission,
+              },
+            },
+            create: body,
           },
         },
         imageIds: imageId
@@ -77,6 +111,7 @@ export class AdvertismentsService {
       },
       include: {
         imageIds: true,
+        car: true,
       },
     });
 

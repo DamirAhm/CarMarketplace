@@ -1,6 +1,6 @@
 import {axiosInstance} from "../../../../../../utils/axiosInstance";
-import {AdWithImage} from "../../../../components/AdvertisementComponent";
+import {AdWithIncludes} from "../../../../components/AdvertisementComponent";
 
 export const getMyAdvertisements = () => {
-    return axiosInstance.get<AdWithImage[]>('/advertisments/mine').then(({data}) => data)
+    return axiosInstance.get<AdWithIncludes[]>('/advertisments/mine').then(({data}) => data)
 }
