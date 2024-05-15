@@ -1,5 +1,5 @@
 import {useController, useFormContext} from "react-hook-form";
-import React, {useState} from "react";
+import React, {PropsWithChildren, useState} from "react";
 import {Box, Button, Skeleton, styled} from "@mui/material";
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import {createImage} from "./api/createImage";
@@ -7,7 +7,19 @@ import {Image} from "../Image";
 
 type Props = {
     name: string;
+    RenderElement?: React.FC<PropsWithChildren>;
+    display?: boolean;
 }
+
+const DefaultRenderElement = ({children}: PropsWithChildren) => <Button
+    component="label"
+    role={undefined}
+    variant="contained"
+    tabIndex={-1}
+>
+    Загрузить изображение&nbsp;&nbsp;&nbsp;<CloudUploadIcon/>
+    {children}
+</Button>
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -21,7 +33,7 @@ const VisuallyHiddenInput = styled('input')({
     width: 1,
 }) as any as React.FC<any>;
 
-export const ImageField: React.FC<Props> = ({name}) => {
+export const ImageField: React.FC<Props> = ({name, display = true, RenderElement = DefaultRenderElement}) => {
     const {control} = useFormContext();
     const {field} = useController({
         name,
@@ -41,16 +53,10 @@ export const ImageField: React.FC<Props> = ({name}) => {
     };
 
     return <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
-        {field.value && <Image id={field.value}/>}
-        {!field.value && !isLoading && <Button
-            component="label"
-            role={undefined}
-            variant="contained"
-            tabIndex={-1}
-        >
-            Загрузить изображение&nbsp;&nbsp;&nbsp;<CloudUploadIcon/>
+        {field.value && display && <Image id={field.value}/>}
+        {(!field.value || !display) && !isLoading && <RenderElement>
             <VisuallyHiddenInput accept={'image/*'} onChange={handleChange} type="file"/>
-        </Button>}
+        </RenderElement>}
         {
             !field.value && isLoading && <Skeleton/>
         }

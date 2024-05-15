@@ -1,6 +1,6 @@
 import {
-  CreateAdvertismentInterface,
   Currencies,
+  ICreateAdvertisment,
 } from '../../../../common/interfaces/advertisments/createAdvertisment.interface';
 import {
   IsEnum,
@@ -17,7 +17,7 @@ import {
   Transmissions,
 } from '../../../../common/constants/CarFeatures';
 
-export class CreateAdvertismentDto implements CreateAdvertismentInterface {
+export class CreateAdvertismentDto implements ICreateAdvertisment {
   @IsOptional()
   @IsEnum(Bodies)
   readonly body?: (typeof Bodies)[number];
@@ -27,7 +27,7 @@ export class CreateAdvertismentDto implements CreateAdvertismentInterface {
 
   @IsOptional()
   @IsEnum(EngineTypes)
-  readonly engineType?: (typeof EngineTypes)[number];
+  readonly engineType: (typeof EngineTypes)[number];
 
   @IsNumber()
   @IsPositive()
@@ -60,7 +60,7 @@ export class CreateAdvertismentDto implements CreateAdvertismentInterface {
 
   @IsOptional()
   @IsEnum(Transmissions)
-  readonly transmission?: (typeof Transmissions)[number];
+  readonly transmission: (typeof Transmissions)[number];
 
   @IsInt()
   readonly year: number;

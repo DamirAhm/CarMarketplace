@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start:back": "npm run start:dev --prefix ./backend",
+    "start:front": "npm run dev --prefix ./frontend"
   },
   "keywords": [],
   "author": "",
@@ -17,7 +18,9 @@
     "@nestjs/jwt": "^10.2.0",
     "@prisma/client": "^5.13.0",
     "@types/cookie-parser": "^1.4.7",
+    "clsx": "^2.1.1",
     "cookie-parser": "^1.4.6",
+    "mui-tel-input": "^5.1.2",
     "next": "14.0.4",
     "react": "18.3.1",
     "react-dom": "18.3.1",

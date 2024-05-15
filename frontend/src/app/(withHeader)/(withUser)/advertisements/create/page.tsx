@@ -3,8 +3,8 @@ import {Box, Button, Grid, Paper, Typography} from "@mui/material";
 import {FormProvider, useForm} from "react-hook-form";
 import {SelectField} from "../../../../../components/form/SelectField";
 import {
-    CreateAdvertismentInterface,
-    Currencies
+    Currencies,
+    ICreateAdvertisment
 } from "../../../../../../../common/interfaces/advertisments/createAdvertisment.interface";
 import {Bodies, Brands, EngineTypes, Transmissions} from "../../../../../../../common/constants/CarFeatures";
 import {InputField} from "../../../../../components/form/InputField";
@@ -19,7 +19,7 @@ const Years = Array.from({length: 50}, (_, i) => currentYear - i).map((value) =>
 }));
 
 export default function CreateAdvertisementsPage() {
-    const methods = useForm<CreateAdvertismentInterface>();
+    const methods = useForm<ICreateAdvertisment>();
     const {handleSubmit} = methods;
     const router = useRouter();
 
@@ -42,9 +42,10 @@ export default function CreateAdvertisementsPage() {
                         <Box height={"10px"}/>
                         <Typography variant={'h6'} color={'black'}>Характеристики</Typography>
                         <SelectField required name={'year'} label={'Год выпуска *'} options={Years}/>
+                        <SelectField required name={'engineType'} label={'Двигатель *'} options={EngineTypes}/>
+                        <SelectField required name={'transmission'} label={'Коробка передач *'}
+                                     options={Transmissions}/>
                         <SelectField name={'body'} label={'Кузов'} options={Bodies}/>
-                        <SelectField name={'engineType'} label={'Двигатель'} options={EngineTypes}/>
-                        <SelectField name={'transmission'} label={'Коробка передач'} options={Transmissions}/>
                         <InputField name={'engineVolume'} label={'Объем двигателя'} type={'number'}/>
                         <InputField name={'mileage'} label={'Пробег'} type={'number'}/>
                         <Box height={"10px"}/>
@@ -60,6 +61,10 @@ export default function CreateAdvertisementsPage() {
                             </Grid>
                         </Grid>
                         <Box height={"10px"}/>
+                        <Typography variant={'h6'} color={'black'}>Информация о машине</Typography>
+                        <Box height={"10px"}/>
+                        <InputField multiline name={'description'} label={'Описание'}
+                                    placeholder={'Кратко опишите свою машину'}/>
                         <Typography variant={'h6'} color={'black'}>Фотографии</Typography>
                         <ImageField name={'imageId'}/>
                         <Box height={"10px"}/>

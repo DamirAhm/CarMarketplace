@@ -5,7 +5,7 @@ import {FormProvider, useForm} from "react-hook-form";
 import {InputField} from "../../../components/form/InputField";
 import {atom} from "@reatom/core";
 import {reatomAsync} from "@reatom/async";
-import {AuthInterface} from "../../../../../common/interfaces/auth/auth.interface";
+import {IAuth} from "../../../../../common/interfaces/auth/auth.interface";
 import {login} from "./api/login";
 import {reatomComponent, useAtom} from "@reatom/npm-react";
 import {AxiosError} from "axios";
@@ -16,7 +16,7 @@ import {useEffect} from "react";
 
 const loginErrorAtom = atom<string | null>(null, 'loginErrorAtom');
 
-const fetchLogin = reatomAsync(async (ctx, body: AuthInterface) => {
+const fetchLogin = reatomAsync(async (ctx, body: IAuth) => {
     try {
         const userResult = await login(body);
 
@@ -34,7 +34,7 @@ const fetchLogin = reatomAsync(async (ctx, body: AuthInterface) => {
 const EmailRegex = /^\S+@\S+\.\S+$/
 
 const LoginPage = reatomComponent(({ctx}) => {
-    const methods = useForm<AuthInterface>();
+    const methods = useForm<IAuth>();
     const {handleSubmit, setError} = methods;
 
     const [formError] = useAtom(loginErrorAtom);
@@ -82,7 +82,7 @@ const LoginPage = reatomComponent(({ctx}) => {
             <Box height={'30px'}/>
             <Box width={'100%'} display={'flex'} justifyContent={'space-between'}>
                 <Button type={'submit'} size={'medium'} variant={'contained'}>Войти</Button>
-                <Button size={'medium'}><Link href={'/auth/register'}>Регистрация</Link></Button>
+                <Link href={'/auth/register'}><Button size={'medium'}>Регистрация</Button></Link>
             </Box>
         </form>
     </FormProvider>
