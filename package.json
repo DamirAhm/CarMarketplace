@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start:back": "npm run start:dev --prefix ./backend",
+    "start:front": "npm run dev --prefix ./frontend"
   },
   "keywords": [],
   "author": "",

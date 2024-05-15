@@ -4,7 +4,7 @@ import {getMe} from "../api/getMe";
 import {userAtom, userRequestedAtom} from "../atoms/user.atom";
 import {useEffect} from "react";
 
-const fetchMe = reatomAsync(async (ctx) => {
+export const fetchMe = reatomAsync(async (ctx) => {
     const user = await getMe();
 
     if (user) {

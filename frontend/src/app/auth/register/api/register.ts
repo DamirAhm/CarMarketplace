@@ -1,9 +1,9 @@
 import {axiosInstance} from "../../../../utils/axiosInstance";
-import {User} from "@prisma/client";
 import {IRegister} from "../../../../../../common/interfaces/auth/register.interface";
+import {UserWithAvatar} from "../../../../atoms/user.atom";
 
 export const register = async (body: IRegister) => {
-    const user = await axiosInstance.post<User>('/auth/register', body);
+    const user = await axiosInstance.post<UserWithAvatar>('/auth/register', body);
 
     return user.data;
 }
