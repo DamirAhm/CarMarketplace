@@ -1,17 +1,28 @@
--- RedefineTables
-PRAGMA foreign_keys=OFF;
-CREATE TABLE "new_Image" (
+-- CreateTable
+CREATE TABLE "User" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "login" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "phoneNumber" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "role" TEXT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "imageId" TEXT
+);
+
+-- CreateTable
+CREATE TABLE "Image" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "content" BLOB NOT NULL,
+    "fileType" TEXT NOT NULL,
     "advertismentId" TEXT,
     "userId" TEXT,
     CONSTRAINT "Image_advertismentId_fkey" FOREIGN KEY ("advertismentId") REFERENCES "Advertisment" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "Image_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
-INSERT INTO "new_Image" ("advertismentId", "content", "id", "userId") SELECT "advertismentId", "content", "id", "userId" FROM "Image";
-DROP TABLE "Image";
-ALTER TABLE "new_Image" RENAME TO "Image";
-CREATE TABLE "new_Advertisment" (
+
+-- CreateTable
+CREATE TABLE "Advertisment" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "userId" TEXT NOT NULL,
     "cost" REAL NOT NULL,
@@ -29,8 +40,6 @@ CREATE TABLE "new_Advertisment" (
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "Advertisment_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
-INSERT INTO "new_Advertisment" ("body", "brand", "cost", "createdAt", "currency", "description", "engineType", "engineVolume", "generation", "id", "mileage", "model", "transmission", "userId", "year") SELECT "body", "brand", "cost", "createdAt", "currency", "description", "engineType", "engineVolume", "generation", "id", "mileage", "model", "transmission", "userId", "year" FROM "Advertisment";
-DROP TABLE "Advertisment";
-ALTER TABLE "new_Advertisment" RENAME TO "Advertisment";
-PRAGMA foreign_key_check;
-PRAGMA foreign_keys=ON;
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");

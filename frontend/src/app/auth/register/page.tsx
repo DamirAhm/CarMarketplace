@@ -5,17 +5,18 @@ import {FormProvider, useForm} from "react-hook-form";
 import {InputField} from "../../../components/form/InputField";
 import {atom} from "@reatom/core";
 import {reatomAsync} from "@reatom/async";
-import {AuthInterface} from "../../../../../common/interfaces/auth/auth.interface";
 import {register} from "./api/register";
 import {reatomComponent, useAtom} from "@reatom/npm-react";
 import {AxiosError} from "axios";
 import {userAtom} from "../../../atoms/user.atom";
 import Link from "next/link";
 import {useSavedPage} from "../../../hooks/useSavedPage";
+import {PhoneField} from "../../../components/form/PhoneField";
+import {IRegister} from "../../../../../common/interfaces/auth/register.interface";
 
 const registerErrorAtom = atom<string | null>(null, 'loginErrorAtom');
 
-const fetchRegister = reatomAsync(async (ctx, body: AuthInterface) => {
+const fetchRegister = reatomAsync(async (ctx, body: IRegister) => {
     try {
         const userResult = await register(body);
 
@@ -35,7 +36,7 @@ const fetchRegister = reatomAsync(async (ctx, body: AuthInterface) => {
 const EmailRegex = /^\S+@\S+\.\S+$/
 
 const LoginPage = reatomComponent(({ctx}) => {
-    const methods = useForm<AuthInterface & { password_repeat: string }>();
+    const methods = useForm<IRegister & { password_repeat: string }>();
     const {handleSubmit, setError} = methods;
 
     const [formError, setFormError] = useAtom(registerErrorAtom);
@@ -80,7 +81,10 @@ const LoginPage = reatomComponent(({ctx}) => {
             <Box height={'20px'}/>
             <Box display={'flex'} width={'400px'} gap={'20px'}
                  flexDirection={'column'}>
-                <InputField required size={'small'} fullWidth placeholder={'Введите имя пользователя'}
+                <InputField name={'login'} label={'Имя пользователя'} size={'small'} required fullWidth
+                            placeholder={'Введите имя пользователя'}/>
+                <PhoneField name={'phoneNumber'} label={'Номер телефона'} size={'small'} required fullWidth/>
+                <InputField required size={'small'} fullWidth placeholder={'Введите email'}
                             name={'email'}
                             label={'Email'}/>
                 <InputField required size={'small'} placeholder={'Введите пароль'} type={'password'}
@@ -97,7 +101,7 @@ const LoginPage = reatomComponent(({ctx}) => {
             <Box height={'30px'}/>
             <Box width={'100%'} display={'flex'} justifyContent={'space-between'}>
                 <Button type={'submit'} size={'medium'} variant={'contained'}>Регистрация</Button>
-                <Button size={'medium'}><Link href={'/auth/register'}>Войти</Link></Button>
+                <Link href={'/auth/login'}><Button size={'medium'}>Войти</Button></Link>
             </Box>
         </form>
     </FormProvider>

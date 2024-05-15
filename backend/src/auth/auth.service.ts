@@ -3,13 +3,14 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { AuthDto } from './dto/auth.dto';
 import { hashPassword } from '../utils/hashPassword';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { AUTH_COOKIE_NAME } from './constants';
 import { compare } from 'bcrypt';
+import { IRegister } from '../../../common/interfaces/auth/register.interface';
+import { IAuth } from '../../../common/interfaces/auth/auth.interface';
 
 @Injectable()
 export class AuthService {
@@ -18,7 +19,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async register(response: Response, { email, password }: AuthDto) {
+  async register(response: Response, { email, password, ...rest }: IRegister) {
     const userWithSameLogin = await this.prismaService.user.findUnique({
       where: {
         email,
@@ -35,6 +36,7 @@ export class AuthService {
 
     const user = await this.prismaService.user.create({
       data: {
+        ...rest,
         email,
         login: email.split('@')[0],
         password: hashedPassword,
@@ -46,7 +48,7 @@ export class AuthService {
     return user;
   }
 
-  async login(response: Response, { email, password }: AuthDto) {
+  async login(response: Response, { email, password }: IAuth) {
     const user = await this.prismaService.user.findUnique({
       where: {
         email,

@@ -5,9 +5,10 @@ type Props = {
     name: string;
     label: string;
     required?: boolean;
+    type?: string;
 } & Partial<TextFieldProps>
 
-export const InputField = ({name, type, required, label, ...rest}: Props) => {
+export const InputField = ({name, required, type, label, ...rest}: Props) => {
     const {control} = useFormContext();
     const {field, fieldState} = useController({
         control,
@@ -21,6 +22,7 @@ export const InputField = ({name, type, required, label, ...rest}: Props) => {
         field.onChange(type === 'number' ? Number(value) : value);
     }
 
-    return <TextField value={field.value} required={required} label={label} onChange={onChange} onBlur={field.onBlur}
+    return <TextField type={type} value={field.value} required={required} label={label} onChange={onChange}
+                      onBlur={field.onBlur}
                       error={!!fieldState.error} helperText={fieldState.error && fieldState.error.message} {...rest}/>
 }

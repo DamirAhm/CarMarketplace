@@ -6,7 +6,7 @@ export enum Currencies {
     DOL = 'USD'
 }
 
-export interface CreateAdvertismentInterface {
+export interface ICreateAdvertisment {
     cost: number;
     currency: Currencies,
     brand: (typeof Brands)[number];

@@ -1,7 +1,4 @@
-import {
-  Currencies,
-  ICreateAdvertisment,
-} from '../../../../common/interfaces/advertisments/createAdvertisment.interface';
+import { ISearchAdvertisments } from '../../../../common/interfaces/advertisments/searchAdvertisments.interface';
 import {
   IsEnum,
   IsInt,
@@ -16,25 +13,29 @@ import {
   EngineTypes,
   Transmissions,
 } from '../../../../common/constants/CarFeatures';
+import { Currencies } from '../../../../common/interfaces/advertisments/createAdvertisment.interface';
 
-export class CreateAdvertismentDto implements ICreateAdvertisment {
+export class SearchAdvertismentsDto implements ISearchAdvertisments {
   @IsOptional()
   @IsEnum(Bodies)
   readonly body?: (typeof Bodies)[number];
 
+  @IsOptional()
   @IsEnum(Brands)
-  readonly brand: (typeof Brands)[number];
+  readonly brand?: (typeof Brands)[number];
 
   @IsOptional()
   @IsEnum(EngineTypes)
   readonly engineType?: (typeof EngineTypes)[number];
 
+  @IsOptional()
   @IsNumber()
   @IsPositive()
-  readonly cost: number;
+  readonly cost?: number;
 
+  @IsOptional()
   @IsEnum(Currencies)
-  readonly currency: Currencies;
+  readonly currency?: Currencies;
 
   @IsOptional()
   @IsString()
@@ -56,16 +57,33 @@ export class CreateAdvertismentDto implements ICreateAdvertisment {
 
   @IsOptional()
   @IsString()
-  readonly model: string;
+  readonly model?: string;
 
   @IsOptional()
   @IsEnum(Transmissions)
   readonly transmission?: (typeof Transmissions)[number];
 
+  @IsOptional()
   @IsInt()
-  readonly year: number;
+  readonly year?: number;
 
   @IsOptional()
   @IsString()
   readonly imageId?: string;
+
+  @IsOptional()
+  @IsInt()
+  readonly yearTo?: number;
+
+  @IsOptional()
+  @IsInt()
+  readonly engineVolumeTo?: number;
+
+  @IsOptional()
+  @IsInt()
+  readonly mileageTo?: number;
+
+  @IsOptional()
+  @IsInt()
+  readonly costTo?: number;
 }

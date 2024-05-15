@@ -19,7 +19,7 @@ import Link from "next/link";
 import {useSavedPage} from "../../../hooks/useSavedPage";
 import {usePathname} from "next/navigation";
 import LoginIcon from '@mui/icons-material/Login';
-import {useState} from "react";
+import {useRef, useState} from "react";
 
 const fetchLogout = reatomAsync(async (ctx) => {
     await logout();
@@ -29,7 +29,7 @@ const fetchLogout = reatomAsync(async (ctx) => {
 
 const WhiteButton = styled(Button)({
     color: 'white'
-})
+}) as any;
 
 export const Header = reatomComponent(({ctx}) => {
     const [user] = useAtom(userAtom);
@@ -55,6 +55,8 @@ export const Header = reatomComponent(({ctx}) => {
         fetchLogout(ctx);
     }
 
+    const avatarRef = useRef(null);
+
     return <AppBar color={'info'}>
         <Container maxWidth={'xl'}>
             <Toolbar>
@@ -68,24 +70,17 @@ export const Header = reatomComponent(({ctx}) => {
                             <IconButton
                                 onClick={handleOpen}
                                 size="large"
+                                ref={avatarRef}
                             >
                                 <Avatar>{user.login.slice(0, 2)}</Avatar>
                             </IconButton>
                             <Menu
                                 onClose={handleClose}
                                 open={opened}
-                                id="menu-appbar"
-                                anchorOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'right',
-                                }}
-                                keepMounted
-                                transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'right',
-                                }}
+                                anchorEl={avatarRef.current}
                             >
-                                <MenuItem>Профиль</MenuItem>
+                                <Link href={'/profile'}><MenuItem>Профиль</MenuItem></Link>
+                                <Link href={'/profile/advertisements'}><MenuItem>Мои объявления</MenuItem></Link>
                                 <MenuItem onClick={onLogout}>Выйти</MenuItem>
                             </Menu>
                         </div>
