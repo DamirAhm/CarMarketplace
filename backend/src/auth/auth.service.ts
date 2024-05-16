@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { AuthDto } from './dto/auth.dto';
 import { hashPassword } from '../utils/hashPassword';
 import { PrismaService } from '../prisma/prisma.service';
@@ -55,7 +51,7 @@ export class AuthService {
     const isPasswordsIdentical = await compare(password, user?.password || '');
 
     if (!isPasswordsIdentical) {
-      throw new UnauthorizedException('Неверный логин или пароль');
+      throw new BadRequestException('Неверный логин или пароль');
     }
 
     await this.setAuthCookie(response, login);
