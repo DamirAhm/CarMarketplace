@@ -6,11 +6,11 @@ import { FormProvider, useForm } from "react-hook-form";
 import { ICreateFeedback } from "../../../../../../../common/interfaces/feedback/createFeedback.interface";
 import { RatingField } from "../../../../../components/form/RatingField";
 import { createFeedback } from "./api/createFeedback";
-import { CarWithImages } from "../api/getCar";
+import { CarWithIncludes } from "../api/getCar";
 
 type Props = {
   carId: string;
-  setFeedbacks: Dispatch<SetStateAction<CarWithImages["feedbacks"]>>
+  setFeedbacks: Dispatch<SetStateAction<CarWithIncludes["feedbacks"]>>
 }
 
 export const CreateFeedbackButton: React.FC<Props> = ({ carId, setFeedbacks }: Props) => {

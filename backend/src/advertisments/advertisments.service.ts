@@ -57,6 +57,24 @@ export class AdvertismentsService {
     }));
   }
 
+  async getRecommendations() {
+    const ads = await this.prismaService.advertisment.findMany({
+      include: {
+        imageIds: true,
+        car: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: 10,
+    });
+
+    return ads.map(({ imageIds, ...rest }) => ({
+      ...rest,
+      imageIds: imageIds.map(({ id }) => id),
+    }));
+  }
+
   createAdvertisment(
     user: User,
     {

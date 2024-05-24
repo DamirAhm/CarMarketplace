@@ -19,7 +19,7 @@ export default async function CarPage({ params: { carId } }: { params: { carId: 
     advertisements
   } = await getCar(carId);
 
-  const rating = feedbacks.length ? feedbacks.reduce((acc, c) => acc + c.rating, 0) + "" : null;
+  const rating = feedbacks.length ? feedbacks.reduce((acc, c) => acc + c.rating, 0) / feedbacks.length : null;
 
   return <Container maxWidth={"xl"}>
     <Box padding={"40px 0"} width={"100%"} display={"flex"} justifyContent={"center"} alignItems={"center"}>

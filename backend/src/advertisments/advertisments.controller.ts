@@ -32,6 +32,11 @@ export class AdvertismentsController {
     return this.advertismentService.getAdvertisments(body);
   }
 
+  @Get('/recommendations')
+  getRecommendations() {
+    return this.advertismentService.getRecommendations();
+  }
+
   @UseGuards(AuthorizedGuard)
   @Delete('/:id')
   deleteAdvertisment(@Param('id') id: string, @User() user: UserModel) {

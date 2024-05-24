@@ -52,6 +52,8 @@ model Reaction {
   opinion String
 
   createdAt DateTime @default(now())
+
+  @@unique([userId, feedbackId])
 }
 
 model Comments {

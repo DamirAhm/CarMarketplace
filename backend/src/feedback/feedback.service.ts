@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ICreateFeedback } from '../../../common/interfaces/feedback/createFeedback.interface';
 import { User } from '@prisma/client';
+import { CreateReactionDto } from './dto/createReaction.dto';
 
 @Injectable()
 export class FeedbackService {
@@ -48,6 +49,31 @@ export class FeedbackService {
           },
         },
         ...body,
+      },
+    });
+  }
+
+  async addReaction(user: User, { feedbackId, opinion }: CreateReactionDto) {
+    await this.prismaService.reaction.deleteMany({
+      where: {
+        userId: user.id,
+        feedbackId,
+      },
+    });
+
+    return this.prismaService.reaction.create({
+      data: {
+        user: {
+          connect: {
+            id: user.id,
+          },
+        },
+        feedback: {
+          connect: {
+            id: feedbackId,
+          },
+        },
+        opinion,
       },
     });
   }

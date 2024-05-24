@@ -4,11 +4,11 @@ import { CreateFeedbackButton } from "./CreateFeedbackButton";
 import { Box, Grid } from "@mui/material";
 import { FeedbackComponent } from "./Feedback";
 import React, { useState } from "react";
-import { CarWithImages } from "../api/getCar";
+import { CarWithIncludes } from "../api/getCar";
 
 type Props = {
   carId: string;
-  initialFeedbacks: CarWithImages["feedbacks"];
+  initialFeedbacks: CarWithIncludes["feedbacks"];
 }
 
 export const FeedbackSection: React.FC<Props> = ({ carId, initialFeedbacks }) => {

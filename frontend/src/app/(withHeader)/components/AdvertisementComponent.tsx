@@ -20,9 +20,15 @@ export const AdvertismentComponent: React.FC<AdWithIncludes & {
         onDelete,
         id
       }) => {
-  return <Link href={`/cars/${carId}`}>
-    <Card sx={{ maxWidth: 345 }}>
-      <CardActionArea>
+  return <Link style={{ height: "100%" }} href={`/cars/${carId}`}>
+    <Card sx={{ height: "100%", maxWidth: 345 }}>
+      <CardActionArea style={{
+        height: "100%",
+        display: "flex",
+        alignItems: "start",
+        justifyContent: "start",
+        flexDirection: "column"
+      }}>
         <CardMedia
           component={"img"}
           image={`http://localhost:3000/images/${imageIds[0]}`}

@@ -23,16 +23,16 @@ export class CurrentUserMiddleware implements NestMiddleware {
 
     const { email } = await this.jwtService.verifyAsync(authCookie);
 
-    req['user'] = await this.prismaService.user
-      .findUnique({
-        where: {
-          email,
-        },
-        include: {
-          avatar: true,
-        },
-      })
-      .then(({ avatar, ...rest }) => ({ ...rest, avatar: avatar[0]?.id }));
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        email,
+      },
+      include: {
+        avatar: true,
+      },
+    });
+
+    req['user'] = user && { ...user, avatar: user.avatar[0]?.id };
 
     if (!req['user']) {
       this.authService.logout(res);
