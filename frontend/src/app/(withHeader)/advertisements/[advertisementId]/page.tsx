@@ -1,5 +1,5 @@
 import { getAdvertisement } from "./api/getAdvertisement";
-import { Box, Button, Container, Grid, Paper, Typography } from "@mui/material";
+import { Box, Button, Grid, Paper, Typography } from "@mui/material";
 import React from "react";
 import { Avatar, Image, Space, Statistic } from "antd";
 import { AddView } from "./components/AddView";
@@ -18,7 +18,9 @@ import Link from "next/link";
 import { AdvertismentComponent } from "../../components/AdvertisementComponent";
 import { getAdvertisments } from "../../api/getAdvertisments";
 
-export default async function CarPage({ params: { advertisementId } }: { params: { advertisementId: string } }) {
+export default async function AdvertismentPage({ params: { advertisementId } }: {
+  params: { advertisementId: string }
+}) {
   const {
     id,
     imageIds,
@@ -27,6 +29,7 @@ export default async function CarPage({ params: { advertisementId } }: { params:
     views,
     favorites,
     creator: {
+      id: creatorId,
       login,
       phoneNumber,
       avatar
@@ -50,7 +53,7 @@ export default async function CarPage({ params: { advertisementId } }: { params:
   const allViews = views.length;
   const todayViews = views.filter(({ createdAt }) => new Date(createdAt).getDate() === new Date().getDate()).length;
 
-  return <Container maxWidth={"xl"}>
+  return <>
     <AddView />
     <Box padding={"40px 0"} width={"100%"} display={"flex"} justifyContent={"center"} alignItems={"center"}>
       <Paper>
@@ -71,15 +74,17 @@ export default async function CarPage({ params: { advertisementId } }: { params:
             <Box width={"30px"} height={"30px"}>
               {avatar
                 ? <Image src={getImageUrl(avatar)} width={30} height={30} />
-                : <Avatar size={{ xs: 30 }} src={avatar} icon={<UserOutlined />} />
+                : <Avatar size={{ xs: 30 }} icon={<UserOutlined />} />
               }
             </Box>
             <Box width={"20px"} />
             <Typography variant={"h6"} color={"gray"}>{login}&nbsp;&nbsp;&nbsp;{phoneNumber}</Typography>
             <Box width={"10px"} />
-            <Button style={{ padding: "5px" }}>
-              <ChatIcon style={{ color: "gray" }} />
-            </Button>
+            <Link href={`/chat/${creatorId}`}>
+              <Button style={{ padding: "5px" }}>
+                <ChatIcon style={{ color: "gray" }} />
+              </Button>
+            </Link>
           </Box>
           <Box height={"20px"} />
           <ImageGroup images={imageIds} />
@@ -131,5 +136,5 @@ export default async function CarPage({ params: { advertisementId } }: { params:
         </Box>
       </Paper>
     </Box>
-  </Container>;
+  </>;
 }

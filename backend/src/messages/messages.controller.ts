@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Param,
   Post,
   Put,
@@ -16,6 +17,12 @@ import { SendMessageDto } from './dto/SendMessage.dto';
 @Controller('messages')
 export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}
+
+  @UseGuards(AuthorizedGuard)
+  @Get('/chats')
+  getChats(@User() user: UserModel) {
+    return this.messagesService.getChats(user);
+  }
 
   @UseGuards(AuthorizedGuard)
   @Post()

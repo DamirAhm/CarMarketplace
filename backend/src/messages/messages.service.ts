@@ -12,6 +12,42 @@ import { IEditMessage } from '../../../common/interfaces/messages/EditMessage.in
 export class MessagesService {
   constructor(private readonly prismaService: PrismaService) {}
 
+  async getChats(user: User) {
+    const messages = await this.prismaService.message.findMany({
+      where: {
+        senderId: user.id,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      include: {
+        receiver: {
+          include: {
+            avatar: {
+              select: {
+                id: true,
+              },
+            },
+          },
+        },
+      },
+      distinct: 'receiverId',
+    });
+
+    return Object.fromEntries(
+      messages.map((mes) => [
+        mes.receiverId,
+        {
+          ...mes,
+          receiver: {
+            ...mes.receiver,
+            avatar: mes.receiver.avatar[0]?.id,
+          },
+        },
+      ]),
+    );
+  }
+
   async sendMessage(user: User, { message, to }: ISendMessage) {
     await this.prismaService.user
       .findUniqueOrThrow({
