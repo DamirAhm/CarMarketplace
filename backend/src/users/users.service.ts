@@ -34,6 +34,9 @@ export class UsersService {
       const userWithSameEmail = await this.prismaService.user.findUnique({
         where: {
           email,
+          NOT: {
+            id: user.id,
+          },
         },
       });
 
@@ -48,6 +51,9 @@ export class UsersService {
       const userWithSamePhoneNumber = await this.prismaService.user.findUnique({
         where: {
           phoneNumber,
+          NOT: {
+            id: user.id,
+          },
         },
       });
 

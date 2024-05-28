@@ -38,9 +38,20 @@ export class AdvertismentsController {
   }
 
   @UseGuards(AuthorizedGuard)
+  @Get('/favorites')
+  getFavorites(@User() user: UserModel) {
+    return this.advertismentService.getFavorites(user);
+  }
+
+  @UseGuards(AuthorizedGuard)
   @Delete('/:id')
   deleteAdvertisment(@Param('id') id: string, @User() user: UserModel) {
     return this.advertismentService.deleteAdvertisment(id, user);
+  }
+
+  @Get('/:id')
+  getAdvertisment(@Param('id') id: string) {
+    return this.advertismentService.getAdvertisment(id);
   }
 
   @UseGuards(AuthorizedGuard)

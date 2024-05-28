@@ -22,10 +22,24 @@ model User {
   feedbacks     Feedback[]
   avatar        Image[]
   reactions     Reaction[]
-  comments      Comments[]
+  comments      Comment[]
+  views         View[]
+  favorites     Favorite[]
 
   createdAt DateTime @default(now())
   imageId   String?
+}
+
+model Favorite {
+  id String @id() @default(uuid())
+
+  user          User         @relation(fields: [userId], references: [id])
+  advertisement Advertisment @relation(fields: [advertismentId], references: [id])
+
+  userId         String
+  advertismentId String
+
+  @@unique([advertismentId, userId])
 }
 
 model Image {
@@ -56,7 +70,7 @@ model Reaction {
   @@unique([userId, feedbackId])
 }
 
-model Comments {
+model Comment {
   id String @id() @default(uuid())
 
   user       User     @relation(fields: [userId], references: [id])
@@ -84,7 +98,7 @@ model Feedback {
 
   imageIds  Image[]
   reactions Reaction[]
-  comments  Comments[]
+  comments  Comment[]
 
   createdAt DateTime @default(now())
 }
@@ -98,6 +112,7 @@ model Car {
   transmission String
 
   engineVolume Float?
+  horsePowers  Int?
   body         String?
   generation   String?
 
@@ -122,7 +137,23 @@ model Advertisment {
   car   Car    @relation(fields: [carId], references: [id], onDelete: Cascade)
   carId String
 
-  imageIds Image[]
+  imageIds  Image[]
+  views     View[]
+  favorites Favorite[]
 
   createdAt DateTime @default(now())
+}
+
+model View {
+  id String @id() @default(uuid())
+
+  user          User         @relation(fields: [userId], references: [id])
+  advertisement Advertisment @relation(fields: [advertismentId], references: [id], onDelete: Cascade)
+
+  userId         String
+  advertismentId String
+
+  createdAt DateTime @default(now())
+
+  @@unique([advertismentId, userId])
 }

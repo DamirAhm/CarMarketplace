@@ -1,29 +1,46 @@
-import { Advertisment, Car } from "@prisma/client";
+"use client";
+
+import { Advertisment, Car, Favorite, View } from "@prisma/client";
 import React from "react";
 import { Button, Card, CardActionArea, CardContent, CardMedia, Typography } from "@mui/material";
 import Link from "next/link";
+import { UserWithAvatar } from "../../../atoms/user.atom";
+import { FavoriteButton } from "../advertisements/[advertisementId]/components/FavoriteButton";
+import { Row } from "antd";
+import { getImageUrl } from "../../../utils/getImageUrl";
 
 export type AdWithIncludes = Advertisment & {
   imageIds: string[],
   car: Car,
+  views: View[],
+  favorites: Favorite[]
+  creator: UserWithAvatar;
 };
 
 export const AdvertismentComponent: React.FC<AdWithIncludes & {
   // eslint-disable-next-line no-unused-vars
-  onDelete?: (id: string) => void
+  onDelete?: (id: string) => void,
+  // eslint-disable-next-line no-unused-vars
+  onChangeFavorite?: (id: string, isFavorite: boolean) => void
 }> = ({
-        car: { model, brand, id: carId },
+        car: { model, brand },
         imageIds,
         description,
         cost,
         currency,
         onDelete,
-        id
+        onChangeFavorite,
+        id,
+        favorites
       }) => {
-  return <Link style={{ height: "100%" }} href={`/cars/${carId}`}>
-    <Card sx={{ height: "100%", maxWidth: 345 }}>
+
+  const handleChangeFavorite = (isFavorite: boolean) => {
+    onChangeFavorite?.(id, isFavorite);
+  };
+
+  return <Card sx={{ height: "100%", maxWidth: 345 }}>
+    <Link style={{ height: "100%" }} href={`/advertisements/${id}`}>
       <CardActionArea style={{
-        height: "100%",
         display: "flex",
         alignItems: "start",
         justifyContent: "start",
@@ -31,25 +48,29 @@ export const AdvertismentComponent: React.FC<AdWithIncludes & {
       }}>
         <CardMedia
           component={"img"}
-          image={`http://localhost:3000/images/${imageIds[0]}`}
+          image={getImageUrl(imageIds[0])}
           height="200"
         />
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="div">
-            {brand} {model}
-          </Typography>
-          <Typography gutterBottom variant="body2" color="text.secondary">
-            {description}
-          </Typography>
-          <Typography variant="h6" color={"green"} gutterBottom component="div">
-            {cost} {currency}
-          </Typography>
-
-          {onDelete &&
-            <Button onClick={() => onDelete(id)} size={"small"} color={"error"}
-                    variant={"contained"}>Удалить</Button>}
-        </CardContent>
       </CardActionArea>
-    </Card>
-  </Link>;
+    </Link>
+    <CardContent style={{ width: "100%" }}>
+      <Row align={"bottom"} justify={"space-between"}>
+        <Typography gutterBottom variant="h5" component="div">
+          {brand} {model}
+        </Typography>
+
+        <FavoriteButton onChange={handleChangeFavorite} advertisementId={id} favorites={favorites || []} />
+      </Row>
+      <Typography gutterBottom variant="body2" color="text.secondary">
+        {description}
+      </Typography>
+      <Typography variant="h6" color={"green"} gutterBottom component="div">
+        {cost} {currency}
+      </Typography>
+
+      {onDelete &&
+        <Button onClick={() => onDelete(id)} size={"small"} color={"error"}
+                variant={"contained"}>Удалить</Button>}
+    </CardContent>
+  </Card>;
 };

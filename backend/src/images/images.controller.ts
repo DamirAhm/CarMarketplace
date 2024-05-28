@@ -7,10 +7,10 @@ import {
   Post,
   Res,
   StreamableFile,
-  UploadedFile,
+  UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { ImagesService } from './images.service';
 import { Response } from 'express';
 
@@ -19,16 +19,18 @@ export class ImagesController {
   constructor(private readonly imagesService: ImagesService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FilesInterceptor('files'))
   createImage(
-    @UploadedFile(
+    @UploadedFiles(
       new ParseFilePipe({
         validators: [new FileTypeValidator({ fileType: 'image/*' })],
       }),
     )
-    file: Express.Multer.File,
+    files: Express.Multer.File[],
   ) {
-    return this.imagesService.createImage(file);
+    return Promise.all(
+      files.map((file) => this.imagesService.createImage(file)),
+    );
   }
 
   @Get('/:id')

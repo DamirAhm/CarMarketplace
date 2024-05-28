@@ -47,7 +47,7 @@ export class AuthService {
 
     const hashedPassword = await hashPassword(password);
 
-    const user = await this.prismaService.user.create({
+    const { avatar, ...user } = await this.prismaService.user.create({
       data: {
         ...rest,
         phoneNumber,
@@ -55,17 +55,34 @@ export class AuthService {
         login: email.split('@')[0],
         password: hashedPassword,
       },
+      include: {
+        avatar: {
+          select: {
+            id: true,
+          },
+        },
+      },
     });
 
     await this.setAuthCookie(response, email);
 
-    return user;
+    return {
+      ...user,
+      avatar: avatar[0]?.id,
+    };
   }
 
   async login(response: Response, { email, password }: IAuth) {
-    const user = await this.prismaService.user.findUnique({
+    const { avatar, ...user } = await this.prismaService.user.findUnique({
       where: {
         email,
+      },
+      include: {
+        avatar: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
 
@@ -77,7 +94,10 @@ export class AuthService {
 
     await this.setAuthCookie(response, email);
 
-    return user;
+    return {
+      ...user,
+      avatar: avatar[0]?.id,
+    };
   }
 
   logout(response: Response) {

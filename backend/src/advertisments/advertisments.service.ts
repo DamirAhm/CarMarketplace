@@ -4,9 +4,40 @@ import { User } from '@prisma/client';
 import { ICreateAdvertisment } from '../../../common/interfaces/advertisments/createAdvertisment.interface';
 import { SearchAdvertismentsDto } from './dto/SearchAdvertisments.dto';
 
+const include = {
+  imageIds: true,
+  car: true,
+  views: true,
+  favorites: true,
+  creator: {
+    include: {
+      avatar: true,
+    },
+  },
+};
+
 @Injectable()
 export class AdvertismentsService {
   constructor(private readonly prismaService: PrismaService) {}
+
+  async getAdvertisment(advertismentId: string) {
+    const { imageIds, creator, ...rest } =
+      await this.prismaService.advertisment.findUniqueOrThrow({
+        include,
+        where: {
+          id: advertismentId,
+        },
+      });
+
+    return {
+      ...rest,
+      imageIds: imageIds.map(({ id }) => id),
+      creator: {
+        ...creator,
+        avatar: creator.avatar[0]?.id,
+      },
+    };
+  }
 
   async getAdvertisments({
     mileage,
@@ -22,10 +53,7 @@ export class AdvertismentsService {
     ...rest
   }: SearchAdvertismentsDto) {
     const ads = await this.prismaService.advertisment.findMany({
-      include: {
-        imageIds: true,
-        car: true,
-      },
+      include,
       where: {
         currency,
         description,
@@ -51,34 +79,61 @@ export class AdvertismentsService {
       },
     });
 
-    return ads.map(({ imageIds, ...rest }) => ({
+    return ads.map(({ imageIds, creator, ...rest }) => ({
       ...rest,
       imageIds: imageIds.map(({ id }) => id),
+      creator: {
+        ...creator,
+        avatar: creator.avatar[0]?.id,
+      },
     }));
   }
 
   async getRecommendations() {
     const ads = await this.prismaService.advertisment.findMany({
-      include: {
-        imageIds: true,
-        car: true,
-      },
+      include,
       orderBy: {
         createdAt: 'desc',
       },
       take: 10,
     });
 
-    return ads.map(({ imageIds, ...rest }) => ({
+    return ads.map(({ imageIds, creator, ...rest }) => ({
       ...rest,
       imageIds: imageIds.map(({ id }) => id),
+      creator: {
+        ...creator,
+        avatar: creator.avatar[0]?.id,
+      },
+    }));
+  }
+
+  async getFavorites(user: User) {
+    const ads = await this.prismaService.advertisment.findMany({
+      include,
+      where: {
+        favorites: {
+          some: {
+            userId: user.id,
+          },
+        },
+      },
+    });
+
+    return ads.map(({ imageIds, creator, ...rest }) => ({
+      ...rest,
+      imageIds: imageIds.map(({ id }) => id),
+      creator: {
+        ...creator,
+        avatar: creator.avatar[0]?.id,
+      },
     }));
   }
 
   createAdvertisment(
     user: User,
     {
-      imageId,
+      imageIds,
       cost,
       currency,
       mileage,
@@ -111,11 +166,11 @@ export class AdvertismentsService {
             create: body,
           },
         },
-        imageIds: imageId
+        imageIds: imageIds
           ? {
-              connect: {
-                id: imageId,
-              },
+              connect: imageIds.map((id) => ({
+                id: id,
+              })),
             }
           : undefined,
       },
@@ -127,10 +182,7 @@ export class AdvertismentsService {
       where: {
         userId: user.id,
       },
-      include: {
-        imageIds: true,
-        car: true,
-      },
+      include,
     });
 
     return ads.map(({ imageIds, ...rest }) => ({

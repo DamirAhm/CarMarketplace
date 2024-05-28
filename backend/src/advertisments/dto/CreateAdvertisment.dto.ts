@@ -66,6 +66,6 @@ export class CreateAdvertismentDto implements ICreateAdvertisment {
   readonly year: number;
 
   @IsOptional()
-  @IsString()
-  readonly imageId?: string;
+  @IsString({ each: true })
+  readonly imageIds?: string[];
 }

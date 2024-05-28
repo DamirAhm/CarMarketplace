@@ -1,16 +1,5 @@
 "use client";
-import {
-  AppBar,
-  Avatar,
-  Button,
-  Container,
-  IconButton,
-  Menu,
-  MenuItem,
-  styled,
-  Toolbar,
-  Typography
-} from "@mui/material";
+import { AppBar, Button, Container, IconButton, Menu, MenuItem, styled, Toolbar, Typography } from "@mui/material";
 import { reatomComponent, useAtom } from "@reatom/npm-react";
 import { userAtom, userRequestedAtom } from "../../../atoms/user.atom";
 import { reatomAsync } from "@reatom/async";
@@ -20,6 +9,9 @@ import { useSavedPage } from "../../../hooks/useSavedPage";
 import { usePathname } from "next/navigation";
 import LoginIcon from "@mui/icons-material/Login";
 import { useRef, useState } from "react";
+import { Avatar } from "antd";
+import { UserOutlined } from "@ant-design/icons";
+import { getImageUrl } from "../../../utils/getImageUrl";
 
 const fetchLogout = reatomAsync(async (ctx) => {
   await logout();
@@ -74,7 +66,7 @@ export const Header = reatomComponent(({ ctx }) => {
                 size="large"
                 ref={avatarRef}
               >
-                <Avatar>{user.login.slice(0, 2)}</Avatar>
+                <Avatar icon={<UserOutlined />} src={user.avatar && getImageUrl(user.avatar)} />
               </IconButton>
               <Menu
                 onClose={handleClose}
@@ -83,6 +75,7 @@ export const Header = reatomComponent(({ ctx }) => {
               >
                 <Link href={"/profile"}><MenuItem>Профиль</MenuItem></Link>
                 <Link href={"/profile/advertisements"}><MenuItem>Мои объявления</MenuItem></Link>
+                <Link href={"/profile/favorites"}><MenuItem>Понравившиеся</MenuItem></Link>
                 <MenuItem onClick={onLogout}>Выйти</MenuItem>
               </Menu>
             </div>

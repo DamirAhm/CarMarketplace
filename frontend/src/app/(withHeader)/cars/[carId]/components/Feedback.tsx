@@ -11,6 +11,7 @@ import { Opinion } from "../../../../../../../common/types/Opinion";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbDownAltIcon from "@mui/icons-material/ThumbDownAlt";
 import { createReaction } from "./api/createReaction";
+import { Reaction } from "@prisma/client";
 
 type Props = FeedbackWithIncludes;
 
@@ -31,20 +32,20 @@ export const FeedbackComponent: React.FC<Props> = ({ id, title, text, rating, re
   const like = async () => {
     if (!isLiked) {
       await createReaction(id, Opinion.Positive);
-      setReactions((prev) => prev.filter(({ userId }) => userId !== user.id).concat([{
-        userId: user.id,
+      setReactions((prev) => prev.filter(({ userId }) => userId !== user!.id).concat([{
+        userId: user!.id,
         opinion: Opinion.Positive
-      }]));
+      } as Reaction]));
     }
   };
 
   const dislike = async () => {
     if (!isDisliked) {
       await createReaction(id, Opinion.Negative);
-      setReactions((prev) => prev.filter(({ userId }) => userId !== user.id).concat([{
-        userId: user.id,
+      setReactions((prev) => prev.filter(({ userId }) => userId !== user!.id).concat([{
+        userId: user!.id,
         opinion: Opinion.Negative
-      }]));
+      } as Reaction]));
     }
   };
 

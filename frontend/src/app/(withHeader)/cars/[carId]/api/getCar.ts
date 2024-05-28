@@ -1,7 +1,7 @@
 import { axiosInstance } from "../../../../../utils/axiosInstance";
-import { Car, Comments, Feedback, Reaction } from "@prisma/client";
+import { Car, Comment, Feedback, Reaction } from "@prisma/client";
 
-export type FeedbackWithIncludes = Feedback & { comments: Comments[], reactions: Reaction[] }
+export type FeedbackWithIncludes = Feedback & { comments: Comment[], reactions: Reaction[] }
 
 export type CarWithIncludes = Car & {
   images: string[];
