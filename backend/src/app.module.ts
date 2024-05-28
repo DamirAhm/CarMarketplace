@@ -9,6 +9,7 @@ import { ImagesModule } from './images/images.module';
 import { FeedbackModule } from './feedback/feedback.module';
 import { CarsModule } from './cars/cars.module';
 import { FavoritesModule } from './favorites/favorites.module';
+import { MessagesModule } from './messages/messages.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { FavoritesModule } from './favorites/favorites.module';
     FeedbackModule,
     CarsModule,
     FavoritesModule,
+    MessagesModule,
   ],
   controllers: [],
   providers: [],
