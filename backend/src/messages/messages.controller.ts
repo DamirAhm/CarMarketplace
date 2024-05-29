@@ -25,6 +25,12 @@ export class MessagesController {
   }
 
   @UseGuards(AuthorizedGuard)
+  @Get('/chats/:receiverId')
+  getChat(@User() user: UserModel, @Param('receiverId') receiverId: string) {
+    return this.messagesService.getMessages(user, receiverId);
+  }
+
+  @UseGuards(AuthorizedGuard)
   @Post()
   sendMessage(@User() user: UserModel, @Body() body: SendMessageDto) {
     return this.messagesService.sendMessage(user, body);

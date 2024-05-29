@@ -6,6 +6,8 @@ import React, { useEffect, useState } from "react";
 import { getFavorites } from "./api/getFavorites";
 import { reatomComponent } from "@reatom/npm-react";
 import { userAtom } from "../../../../../atoms/user.atom";
+import { Flex } from "antd";
+import Empty from "antd/es/empty/empty";
 
 const FavoritesPages = reatomComponent(({ ctx }) => {
   const [ads, setAds] = useState<AdWithIncludes[] | null>(null);
@@ -40,9 +42,12 @@ const FavoritesPages = reatomComponent(({ ctx }) => {
               )}
             </Grid>
           </>
-          :
-          <Typography gutterBottom variant={"h4"} color={"black"}>К сожалению вам пока ничего не
-            понравилось</Typography>
+          : <Flex vertical align={"center"} justify={"center"}>
+            <Typography gutterBottom variant={"h4"} color={"black"}>К сожалению вам пока ничего не
+              понравилось</Typography>
+            <Box height={"40px"} />
+            <Empty />
+          </Flex>
         }
       </Box>
     </Paper>

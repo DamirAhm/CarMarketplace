@@ -8,6 +8,27 @@ import { User } from '@prisma/client';
 import { ISendMessage } from '../../../common/interfaces/messages/SendMessage.interface';
 import { IEditMessage } from '../../../common/interfaces/messages/EditMessage.interface';
 
+const include = {
+  receiver: {
+    include: {
+      avatar: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  },
+  sender: {
+    include: {
+      avatar: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  },
+};
+
 @Injectable()
 export class MessagesService {
   constructor(private readonly prismaService: PrismaService) {}
@@ -15,37 +36,101 @@ export class MessagesService {
   async getChats(user: User) {
     const messages = await this.prismaService.message.findMany({
       where: {
-        senderId: user.id,
+        OR: [
+          {
+            senderId: user.id,
+          },
+          {
+            receiverId: user.id,
+          },
+        ],
       },
       orderBy: {
         createdAt: 'desc',
       },
-      include: {
-        receiver: {
-          include: {
-            avatar: {
-              select: {
-                id: true,
-              },
-            },
-          },
-        },
-      },
-      distinct: 'receiverId',
+      include,
+    });
+
+    const filteredMessages = messages.filter((mes, i) => {
+      const lastOfSameChat = messages.findLastIndex((m) => {
+        return (
+          (m.receiverId === mes.receiverId && m.senderId === mes.senderId) ||
+          (m.receiverId === mes.senderId && m.senderId === mes.receiverId)
+        );
+      });
+
+      return lastOfSameChat === i;
     });
 
     return Object.fromEntries(
-      messages.map((mes) => [
+      filteredMessages.map((mes) => [
         mes.receiverId,
         {
           ...mes,
-          receiver: {
-            ...mes.receiver,
-            avatar: mes.receiver.avatar[0]?.id,
-          },
+          receiverId: mes.senderId === user.id ? mes.receiverId : mes.senderId,
+          receiver:
+            mes.senderId === user.id
+              ? {
+                  ...mes.receiver,
+                  avatar: mes.receiver.avatar[0]?.id,
+                }
+              : {
+                  ...mes.sender,
+                  avatar: mes.sender.avatar[0]?.id,
+                },
+          sender: undefined,
         },
       ]),
     );
+  }
+
+  async getMessages(user: User, receiverId: string) {
+    if (receiverId === user.id) {
+      throw new BadRequestException(
+        'Вы не можете написать сообщение самому себе',
+      );
+    }
+
+    await this.prismaService.user
+      .findUniqueOrThrow({
+        where: {
+          id: receiverId,
+        },
+      })
+      .catch(() => {
+        throw new BadRequestException('Пользователь не найден');
+      });
+
+    const messages = await this.prismaService.message.findMany({
+      where: {
+        OR: [
+          {
+            senderId: user.id,
+            receiverId,
+          },
+          {
+            senderId: receiverId,
+            receiverId: user.id,
+          },
+        ],
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+      include,
+    });
+
+    return messages.map((mes) => ({
+      ...mes,
+      receiver: {
+        ...mes.receiver,
+        avatar: mes.receiver.avatar[0]?.id,
+      },
+      sender: {
+        ...mes.sender,
+        avatar: mes.sender.avatar[0]?.id,
+      },
+    }));
   }
 
   async sendMessage(user: User, { message, to }: ISendMessage) {
@@ -59,21 +144,35 @@ export class MessagesService {
         throw new BadRequestException('Пользователь не найден');
       });
 
-    return this.prismaService.message.create({
-      data: {
-        sender: {
-          connect: {
-            id: user.id,
+    const { sender, receiver, ...mes } =
+      await this.prismaService.message.create({
+        data: {
+          sender: {
+            connect: {
+              id: user.id,
+            },
           },
-        },
-        receiver: {
-          connect: {
-            id: to,
+          receiver: {
+            connect: {
+              id: to,
+            },
           },
+          message,
         },
-        message,
+        include,
+      });
+
+    return {
+      ...mes,
+      receiver: {
+        ...receiver,
+        avatar: receiver.avatar[0]?.id,
       },
-    });
+      sender: {
+        ...sender,
+        avatar: sender.avatar[0]?.id,
+      },
+    };
   }
 
   async editMessage(user: User, messageId: string, { message }: IEditMessage) {
@@ -106,6 +205,7 @@ export class MessagesService {
       data: {
         message,
       },
+      include,
     });
   }
 
