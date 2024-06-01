@@ -13,6 +13,7 @@ import { AuthorizedGuard } from '../guards/authorized.guard';
 import { User as UserModel } from '@prisma/client';
 import { User } from '../decorators/user.decorator';
 import { SendMessageDto } from './dto/SendMessage.dto';
+import { EditMessageDto } from './dto/EditMessage.dto';
 
 @Controller('messages')
 export class MessagesController {
@@ -41,7 +42,7 @@ export class MessagesController {
   editMessage(
     @User() user: UserModel,
     @Param('messageId') messageId: string,
-    @Body() body: SendMessageDto,
+    @Body() body: EditMessageDto,
   ) {
     return this.messagesService.editMessage(user, messageId, body);
   }

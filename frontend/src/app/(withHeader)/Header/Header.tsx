@@ -9,7 +9,7 @@ import { useSavedPage } from "../../../hooks/useSavedPage";
 import { usePathname } from "next/navigation";
 import LoginIcon from "@mui/icons-material/Login";
 import { useRef, useState } from "react";
-import { Avatar } from "antd";
+import { Avatar, Space } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { getImageUrl } from "../../../utils/getImageUrl";
 
@@ -51,12 +51,29 @@ export const Header = reatomComponent(({ ctx }) => {
 
   return <AppBar color={"info"}>
     <Container maxWidth={"xl"}>
-      <Toolbar>
-        <Typography variant="h6" sx={{ flexGrow: 1 }}>
+      <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Typography variant="h6">
           <Link href={"/"}>
             Авто
           </Link>
         </Typography>
+        <Space size={"large"}>
+          <Link href={"/chat"}>
+            <Typography variant="subtitle1" color={"white"}>
+              Сообщения
+            </Typography>
+          </Link>
+          <Link href={"/profile/favorites"}>
+            <Typography variant="subtitle1" color={"white"}>
+              Понравившиеся
+            </Typography>
+          </Link>
+          <Link href={"/profile/advertisements"}>
+            <Typography variant="subtitle1" color={"white"}>
+              Мои объявления
+            </Typography>
+          </Link>
+        </Space>
         {user ? (
             <div>
               <Link href={"/advertisements/create"}><Button variant={"contained"}>Создать
@@ -74,8 +91,6 @@ export const Header = reatomComponent(({ ctx }) => {
                 anchorEl={avatarRef.current}
               >
                 <Link href={"/profile"}><MenuItem>Профиль</MenuItem></Link>
-                <Link href={"/profile/advertisements"}><MenuItem>Мои объявления</MenuItem></Link>
-                <Link href={"/profile/favorites"}><MenuItem>Понравившиеся</MenuItem></Link>
                 <MenuItem onClick={onLogout}>Выйти</MenuItem>
               </Menu>
             </div>

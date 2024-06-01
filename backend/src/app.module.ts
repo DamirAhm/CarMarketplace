@@ -10,6 +10,7 @@ import { FeedbackModule } from './feedback/feedback.module';
 import { CarsModule } from './cars/cars.module';
 import { FavoritesModule } from './favorites/favorites.module';
 import { MessagesModule } from './messages/messages.module';
+import { ChatsGateway } from './chats/chats.gateway';
 
 @Module({
   imports: [
@@ -31,7 +32,7 @@ import { MessagesModule } from './messages/messages.module';
     MessagesModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [ChatsGateway],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

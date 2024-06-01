@@ -1,0 +1,7 @@
+.more {
+    visibility: hidden;
+}
+
+.message:hover .more {
+    visibility: visible;
+}
