@@ -2,12 +2,12 @@
 
 import { Advertisment, Car, Favorite, View } from "@prisma/client";
 import React from "react";
-import { Button, Card, CardActionArea, CardContent, CardMedia, Typography } from "@mui/material";
+import { Box, Card, CardActionArea, CardContent, CardMedia, Typography } from "@mui/material";
 import Link from "next/link";
 import { UserWithAvatar } from "../../../atoms/user.atom";
-import { FavoriteButton } from "../advertisements/[advertisementId]/components/FavoriteButton";
-import { Row } from "antd";
+import { Button, Col, Row } from "antd";
 import { getImageUrl } from "../../../utils/getImageUrl";
+import { ActionButtons } from "../advertisements/[advertisementId]/components/ActionButtons";
 
 export type AdWithIncludes = Advertisment & {
   imageIds: string[],
@@ -31,14 +31,15 @@ export const AdvertismentComponent: React.FC<AdWithIncludes & {
         onDelete,
         onChangeFavorite,
         id,
-        favorites
+        favorites,
+        userId
       }) => {
 
   const handleChangeFavorite = (isFavorite: boolean) => {
     onChangeFavorite?.(id, isFavorite);
   };
 
-  return <Card sx={{ height: "100%", maxWidth: 345 }}>
+  return <Card sx={{ margin: "10px", height: "100%" }}>
     <Link style={{ height: "100%" }} href={`/advertisements/${id}`}>
       <CardActionArea style={{
         display: "flex",
@@ -53,24 +54,28 @@ export const AdvertismentComponent: React.FC<AdWithIncludes & {
         />
       </CardActionArea>
     </Link>
-    <CardContent style={{ width: "100%" }}>
-      <Row align={"bottom"} justify={"space-between"}>
-        <Typography gutterBottom variant="h5" component="div">
-          {brand} {model}
+    <CardContent style={{ width: "100%", paddingBottom: "0" }}>
+      <Col>
+
+        <Row align={"bottom"} justify={"space-between"}>
+          <Typography gutterBottom variant="h5" component="div">
+            {brand} {model}
+          </Typography>
+
+          <ActionButtons creatorId={userId} favorites={favorites} advertisementId={id}
+                         onChangeFavorite={handleChangeFavorite} compact />
+        </Row>
+        <Typography gutterBottom variant="body2" color="gray">
+          {description}
         </Typography>
-
-        <FavoriteButton onChange={handleChangeFavorite} advertisementId={id} favorites={favorites || []} />
-      </Row>
-      <Typography gutterBottom variant="body2" color="text.secondary">
-        {description}
-      </Typography>
-      <Typography variant="h6" color={"green"} gutterBottom component="div">
-        {cost} {currency}
-      </Typography>
-
-      {onDelete &&
-        <Button onClick={() => onDelete(id)} size={"small"} color={"error"}
-                variant={"contained"}>Удалить</Button>}
+        <Box height={"10px"} />
+        <Typography variant="body1" style={{ color: "#33bb33" }} gutterBottom component="span">
+          {cost} {currency}
+        </Typography>
+        <Box height={"10px"} />
+        {onDelete &&
+          <Button onClick={() => onDelete(id)} size={"middle"} type={"primary"} danger>Удалить</Button>}
+      </Col>
     </CardContent>
   </Card>;
 };

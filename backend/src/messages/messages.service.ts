@@ -7,6 +7,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { User } from '@prisma/client';
 import { ISendMessage } from '../../../common/interfaces/messages/SendMessage.interface';
 import { IEditMessage } from '../../../common/interfaces/messages/EditMessage.interface';
+import { SUPPORT_USER_ID } from '../../../common/constants/ServiceUser';
 
 const include = {
   receiver: {
@@ -34,14 +35,32 @@ export class MessagesService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async getChats(user: User) {
+    // Получаем все сообщения, где текущий пользователь отправитель или получатель
+    // и при этом это не чат с поддержкой
     const messages = await this.prismaService.message.findMany({
       where: {
-        OR: [
+        AND: [
           {
-            senderId: user.id,
+            OR: [
+              {
+                senderId: user.id,
+              },
+              {
+                receiverId: user.id,
+              },
+            ],
           },
           {
-            receiverId: user.id,
+            NOT: {
+              OR: [
+                {
+                  senderId: SUPPORT_USER_ID,
+                },
+                {
+                  receiverId: SUPPORT_USER_ID,
+                },
+              ],
+            },
           },
         ],
       },

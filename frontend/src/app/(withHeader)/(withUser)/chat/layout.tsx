@@ -5,8 +5,9 @@ import { reatomComponent } from "@reatom/npm-react";
 import { userAtom } from "../../../../atoms/user.atom";
 import { getChats, MessageWithIncludes } from "./api/getChats";
 import { Box, Grid, Paper, Typography } from "@mui/material";
-import { Col, Space } from "antd";
+import { Col, Divider, Space } from "antd";
 import { ChatPreview } from "./components/ChatPreview";
+import { SUPPORT_USER_ID, SupportUser } from "../../../../../../common/constants/ServiceUser";
 
 const ChatLayout: React.FC<PropsWithChildren> = reatomComponent(({ ctx, children }) => {
   const user = ctx.spy(userAtom);
@@ -30,6 +31,20 @@ const ChatLayout: React.FC<PropsWithChildren> = reatomComponent(({ ctx, children
             <Col>
               <Typography variant={"h4"} gutterBottom>Ваши чаты</Typography>
               <Box height={"20px"} />
+              {user &&
+                <ChatPreview
+                  id={SUPPORT_USER_ID}
+                  message={"Обращайтесь по любым вопросам"}
+                  wasRead={false}
+                  wasChanged={false}
+                  createdAt={null}
+                  senderId={SUPPORT_USER_ID}
+                  receiverId={SUPPORT_USER_ID}
+                  receiver={SupportUser}
+                  sender={SupportUser}
+                />
+              }
+              <Divider />
               <Space style={{ width: "100%" }} direction={"vertical"}>
                 {
                   (chats ? Object.values(chats) : []).map((chat) => {

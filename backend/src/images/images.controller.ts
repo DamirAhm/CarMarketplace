@@ -1,5 +1,7 @@
+import { User as UserModel } from '@prisma/client';
 import {
   Controller,
+  Delete,
   FileTypeValidator,
   Get,
   Param,
@@ -8,11 +10,14 @@ import {
   Res,
   StreamableFile,
   UploadedFiles,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ImagesService } from './images.service';
 import { Response } from 'express';
+import { AuthorizedGuard } from '../guards/authorized.guard';
+import { User } from '../decorators/user.decorator';
 
 @Controller('images')
 export class ImagesController {
@@ -41,5 +46,11 @@ export class ImagesController {
     const buffer = await this.imagesService.getImage(res, id);
 
     return new StreamableFile(buffer);
+  }
+
+  @UseGuards(AuthorizedGuard)
+  @Delete('/:id')
+  async deleteImage(@User() user: UserModel, @Param('id') id: string) {
+    return this.imagesService.deleteImage(user, id);
   }
 }

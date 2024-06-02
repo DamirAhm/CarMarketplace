@@ -1,8 +1,13 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { User } from '@prisma/client';
 import { ICreateAdvertisment } from '../../../common/interfaces/advertisments/createAdvertisment.interface';
 import { SearchAdvertismentsDto } from './dto/SearchAdvertisments.dto';
+import { IEditAdvertisment } from '../../../common/interfaces/advertisments/editAdvertisment.interface';
 
 const include = {
   imageIds: true,
@@ -142,6 +147,86 @@ export class AdvertismentsService {
     }: ICreateAdvertisment,
   ) {
     return this.prismaService.advertisment.create({
+      data: {
+        cost,
+        currency,
+        mileage,
+        description,
+        creator: {
+          connect: {
+            id: user.id,
+          },
+        },
+        car: {
+          connectOrCreate: {
+            where: {
+              brand_model_year_engineType_transmission: {
+                brand: body.brand,
+                model: body.model,
+                year: body.year,
+                engineType: body.engineType,
+                transmission: body.transmission,
+              },
+            },
+            create: body,
+          },
+        },
+        imageIds: imageIds
+          ? {
+              connect: imageIds.map((id) => ({
+                id: id,
+              })),
+            }
+          : undefined,
+      },
+    });
+  }
+
+  async editAdvertisment(
+    user: User,
+    id: string,
+    {
+      imageIds,
+      cost,
+      currency,
+      mileage,
+      description,
+      ...body
+    }: IEditAdvertisment,
+  ) {
+    const ad = await this.prismaService.advertisment
+      .findUniqueOrThrow({
+        include: {
+          imageIds: true,
+        },
+        where: {
+          id,
+        },
+      })
+      .catch(() => {
+        throw new BadRequestException('Объявление не найдено');
+      });
+
+    if (ad.userId !== user.id) {
+      throw new ForbiddenException('Объявление вам не принадлежит');
+    }
+
+    const { imageIds: oldImages } = ad;
+
+    const imagesToDelete = oldImages
+      .filter((im) => !imageIds.includes(im.id))
+      .map(({ id }) => ({ id }));
+
+    await this.prismaService.image.deleteMany({
+      where: {
+        OR: imagesToDelete,
+      },
+    });
+
+    return this.prismaService.advertisment.update({
+      where: {
+        id,
+      },
       data: {
         cost,
         currency,

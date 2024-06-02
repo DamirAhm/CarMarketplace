@@ -9,9 +9,10 @@ import { useSavedPage } from "../../../hooks/useSavedPage";
 import { usePathname } from "next/navigation";
 import LoginIcon from "@mui/icons-material/Login";
 import { useRef, useState } from "react";
-import { Avatar, Space } from "antd";
+import { Avatar, Flex, Space } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { getImageUrl } from "../../../utils/getImageUrl";
+import { SUPPORT_USER_LOGIN } from "../../../../../common/constants/ServiceUser";
 
 const fetchLogout = reatomAsync(async (ctx) => {
   await logout();
@@ -73,6 +74,11 @@ export const Header = reatomComponent(({ ctx }) => {
               Мои объявления
             </Typography>
           </Link>
+          <Link href={`/chat/${SUPPORT_USER_LOGIN}`}>
+            <Typography variant="subtitle1" color={"white"}>
+              Поддержка
+            </Typography>
+          </Link>
         </Space>
         {user ? (
             <div>
@@ -95,17 +101,24 @@ export const Header = reatomComponent(({ ctx }) => {
               </Menu>
             </div>
           ) :
-          <>{userRequested ?
-            <Link
-              href={"/auth/login"}
+          <>{!user ?
+            <Flex
+              style={{ width: "261px", flexDirection: "row-reverse" }}
             >
-              <WhiteButton
-                startIcon={<LoginIcon />}
-                color={"primary"}
-                onClick={onLogin}>
-                Войти
-              </WhiteButton>
-            </Link> : null}</>
+              <Link
+                href={"/auth/login"}
+              >
+                <WhiteButton
+                  startIcon={<LoginIcon />}
+                  color={"primary"}
+                  onClick={onLogin}>
+                  Войти
+                </WhiteButton>
+              </Link>
+            </Flex>
+            : null
+            }
+          </>
         }
       </Toolbar>
     </Container>

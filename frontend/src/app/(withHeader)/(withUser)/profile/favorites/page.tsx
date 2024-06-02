@@ -9,7 +9,7 @@ import { userAtom } from "../../../../../atoms/user.atom";
 import { Flex } from "antd";
 import Empty from "antd/es/empty/empty";
 
-const FavoritesPages = reatomComponent(({ ctx }) => {
+const FavoritesPage = reatomComponent(({ ctx }) => {
   const [ads, setAds] = useState<AdWithIncludes[] | null>(null);
   const user = ctx.spy(userAtom);
 
@@ -54,4 +54,4 @@ const FavoritesPages = reatomComponent(({ ctx }) => {
   </Box>;
 });
 
-export default FavoritesPages;
+export default FavoritesPage;

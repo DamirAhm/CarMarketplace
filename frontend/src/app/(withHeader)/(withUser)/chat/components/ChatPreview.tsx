@@ -1,46 +1,40 @@
-import { Avatar, Button, Col, Image, Row } from "antd";
+import { Button, Col, Row } from "antd";
 import { Box, Typography } from "@mui/material";
-import { getImageUrl } from "../../../../../utils/getImageUrl";
-import { UserOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import React from "react";
 import { MessageWithIncludes } from "../api/getChats";
 import { reatomComponent } from "@reatom/npm-react";
 import { userAtom } from "../../../../../atoms/user.atom";
+import { Avatar } from "../../../../../components/Avatar";
 
-export const ChatPreview: React.FC<MessageWithIncludes> = reatomComponent(({
-                                                                             ctx,
-                                                                             createdAt,
-                                                                             receiver,
-                                                                             receiverId,
-                                                                             message,
-                                                                             senderId
-                                                                           }) => {
+type Props = Omit<MessageWithIncludes, "createdAt"> & {
+  createdAt: Date | null;
+}
+
+export const ChatPreview: React.FC<Props> = reatomComponent(({
+                                                               ctx,
+                                                               createdAt,
+                                                               receiver,
+                                                               receiverId,
+                                                               message,
+                                                               senderId
+                                                             }) => {
   const user = ctx.spy(userAtom);
   const isLastMine = senderId === user?.id;
 
-  const date = new Date(createdAt);
+  const date = createdAt && new Date(createdAt);
 
-  const hours = date.getHours().toString().padStart(2, "0");
-  const minutes = date.getMinutes().toString().padStart(2, "0");
+  const hours = date?.getHours().toString().padStart(2, "0");
+  const minutes = date?.getMinutes().toString().padStart(2, "0");
 
-  const dateStr = `${hours}:${minutes}`;
+  const dateStr = createdAt ? `${hours}:${minutes}` : "";
 
   return <Link href={`/chat/${receiverId}`}>
     <Button style={{ width: "100%", height: "fit-content" }}>
       <Box padding={"5px"}>
         <Col>
           <Row>
-            <Box width={"30px"} height={"30px"}>
-              {receiver.avatar
-                ?
-                <Image preview={false} style={{ borderRadius: "50%" }}
-                       src={getImageUrl(receiver.avatar)}
-                       width={30}
-                       height={30} />
-                : <Avatar size={{ xs: 30 }} style={{ borderRadius: "50%" }} icon={<UserOutlined />} />
-              }
-            </Box>
+            <Avatar avatar={receiver?.avatar} />
             <Box width={"20px"} />
             <Typography variant={"h6"} color={"gray"}>{receiver.login}</Typography>
           </Row>
