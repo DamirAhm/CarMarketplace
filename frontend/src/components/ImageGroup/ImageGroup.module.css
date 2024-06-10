@@ -1,0 +1,14 @@
+.image {
+    position: relative;
+}
+
+.delete {
+    visibility: hidden;
+    position: absolute !important;
+    right: 10px;
+    top: 10px;
+}
+
+.image:hover .delete {
+    visibility: visible;
+}

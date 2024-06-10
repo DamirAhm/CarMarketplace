@@ -11,7 +11,167 @@ datasource db {
 }
 
 model User {
-  login    String  @id()
-  password String
-  role     String?
+  id          String  @id() @default(uuid())
+  login       String
+  email       String  @unique
+  phoneNumber String  @unique
+  password    String
+  role        String?
+
+  advertisments Advertisment[]
+  feedbacks     Feedback[]
+  avatar        Image[]
+  reactions     Reaction[]
+  comments      Comment[]
+  views         View[]
+  favorites     Favorite[]
+
+  createdAt DateTime @default(now())
+  imageId   String?
+
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+}
+
+model Favorite {
+  id String @id() @default(uuid())
+
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  advertisement Advertisment @relation(fields: [advertismentId], references: [id], onDelete: Cascade)
+
+  userId         String
+  advertismentId String
+
+  @@unique([advertismentId, userId])
+}
+
+model Image {
+  id       String @id @default(uuid())
+  content  Bytes
+  fileType String
+
+  advertisment   Advertisment? @relation(fields: [advertismentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  advertismentId String?
+  user           User?         @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId         String?
+  Feedback       Feedback?     @relation(fields: [feedbackId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  feedbackId     String?
+}
+
+model Reaction {
+  id String @id() @default(uuid())
+
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  feedback   Feedback @relation(fields: [feedbackId], references: [id])
+  feedbackId String
+
+  opinion String
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, feedbackId])
+}
+
+model Comment {
+  id String @id() @default(uuid())
+
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  feedback   Feedback @relation(fields: [feedbackId], references: [id])
+  feedbackId String
+
+  text String
+
+  createdAt DateTime @default(now())
+}
+
+model Feedback {
+  id String @id() @default(uuid())
+
+  userId String
+  carId  String
+
+  user User @relation(fields: [userId], references: [id])
+  car  Car  @relation(fields: [carId], references: [id])
+
+  title  String
+  text   String
+  rating Float
+
+  imageIds  Image[]
+  reactions Reaction[]
+  comments  Comment[]
+
+  createdAt DateTime @default(now())
+}
+
+model Car {
+  id           String @id() @default(uuid())
+  brand        String
+  model        String
+  year         Int
+  engineType   String
+  transmission String
+
+  engineVolume Float?
+  horsePowers  Int?
+  body         String?
+  generation   String?
+
+  advertisements Advertisment[]
+  feedbacks      Feedback[]
+
+  @@unique([brand, model, year, engineType, transmission])
+}
+
+model Advertisment {
+  creator User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  id     String @id() @default(uuid())
+  userId String
+
+  cost        Float
+  currency    String
+  description String @default("")
+
+  mileage Int?
+
+  car   Car    @relation(fields: [carId], references: [id], onDelete: Cascade)
+  carId String
+
+  status String @default("pending")
+
+  imageIds  Image[]
+  views     View[]
+  favorites Favorite[]
+
+  createdAt DateTime @default(now())
+}
+
+model View {
+  id String @id() @default(uuid())
+
+  user          User         @relation(fields: [userId], references: [id])
+  advertisement Advertisment @relation(fields: [advertismentId], references: [id], onDelete: Cascade)
+
+  userId         String
+  advertismentId String
+
+  createdAt DateTime @default(now())
+
+  @@unique([advertismentId, userId])
+}
+
+model Message {
+  id         String  @id() @default(uuid())
+  sender     User    @relation("SentMessages", fields: [senderId], references: [id])
+  receiver   User    @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  message    String
+  wasRead    Boolean @default(false)
+  wasChanged Boolean @default(false)
+
+  createdAt  DateTime @default(now())
+  senderId   String
+  receiverId String
 }

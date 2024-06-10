@@ -1,0 +1,1 @@
+export const getImageUrl = (id: string) => `http://localhost:3000/images/${id}`;

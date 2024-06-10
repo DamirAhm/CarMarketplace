@@ -1,0 +1,7 @@
+.more {
+    visibility: hidden;
+}
+
+.comment:hover .more {
+    visibility: visible;
+}

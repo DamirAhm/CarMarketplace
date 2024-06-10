@@ -1,10 +1,11 @@
-import { IsNotEmpty, IsString } from 'class-validator';
-import { AuthInterface } from '../../../../common/interfaces/auth/auth.interface';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IAuth } from '../../../../common/interfaces/auth/auth.interface';
 
-export class AuthDto implements AuthInterface {
+export class AuthDto implements IAuth {
   @IsString()
+  @IsEmail()
   @IsNotEmpty()
-  readonly login: string;
+  readonly email: string;
 
   @IsString()
   @IsNotEmpty()

@@ -1,6 +1,9 @@
 import {atom} from "@reatom/core";
 import {User} from "@prisma/client";
 
-export const userAtom = atom<User | null>(null, 'userAtom');
+export type UserWithAvatar = User & {
+    avatar?: string;
+}
 
-userAtom.onChange(console.log)
+export const userRequestedAtom = atom(false, 'userRequestedAtom');
+export const userAtom = atom<UserWithAvatar | null>(null, 'userAtom');

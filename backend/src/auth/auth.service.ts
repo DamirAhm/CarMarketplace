@@ -1,11 +1,16 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { AuthDto } from './dto/auth.dto';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { hashPassword } from '../utils/hashPassword';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
-import { AUTH_COOKIE_NAME } from './constants';
+import { AUTH_COOKIE_NAME } from '../../../common/constants/AuthCookie';
 import { compare } from 'bcrypt';
+import { IRegister } from '../../../common/interfaces/auth/register.interface';
+import { IAuth } from '../../../common/interfaces/auth/auth.interface';
 
 @Injectable()
 export class AuthService {
@@ -14,49 +19,86 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async register(response: Response, { login, password }: AuthDto) {
-    const userWithSameLogin = await this.prismaService.user.findUnique({
+  async register(
+    response: Response,
+    { email, password, phoneNumber, login }: IRegister,
+  ) {
+    const userWithSameEmail = await this.prismaService.user.findUnique({
       where: {
-        login,
+        email,
+      },
+    });
+    const userWithSamePhoneNumber = await this.prismaService.user.findUnique({
+      where: {
+        phoneNumber,
       },
     });
 
-    if (userWithSameLogin) {
+    if (userWithSameEmail) {
       throw new BadRequestException(
-        'Пользователь с таким именем уже существует',
+        'Пользователь с таким адресом уже существует',
+      );
+    }
+    if (userWithSamePhoneNumber) {
+      throw new BadRequestException(
+        'Пользователь с таким номером телефона уже существует',
       );
     }
 
     const hashedPassword = await hashPassword(password);
 
-    const user = await this.prismaService.user.create({
+    const { avatar, ...user } = await this.prismaService.user.create({
       data: {
+        phoneNumber,
+        email,
         login,
         password: hashedPassword,
       },
+      include: {
+        avatar: {
+          select: {
+            id: true,
+          },
+        },
+      },
     });
 
-    await this.setAuthCookie(response, login);
+    await this.setAuthCookie(response, email);
 
-    return user;
+    return {
+      ...user,
+      avatar: avatar[0]?.id,
+    };
   }
 
-  async login(response: Response, { login, password }: AuthDto) {
+  async login(response: Response, { email, password }: IAuth) {
     const user = await this.prismaService.user.findUnique({
       where: {
-        login,
+        email,
+      },
+      include: {
+        avatar: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
 
     const isPasswordsIdentical = await compare(password, user?.password || '');
 
-    if (!isPasswordsIdentical) {
-      throw new BadRequestException('Неверный логин или пароль');
+    if (!user || !isPasswordsIdentical) {
+      throw new UnauthorizedException('Неверный email или пароль');
     }
 
-    await this.setAuthCookie(response, login);
+    const { avatar, ...rest } = user;
 
-    return user;
+    await this.setAuthCookie(response, email);
+
+    return {
+      ...rest,
+      avatar: avatar[0]?.id,
+    };
   }
 
   logout(response: Response) {
@@ -67,9 +109,9 @@ export class AuthService {
     });
   }
 
-  private async setAuthCookie(response: Response, login: string) {
+  private async setAuthCookie(response: Response, email: string) {
     const jwt = await this.jwtService.signAsync({
-      login,
+      email,
     });
 
     return response.cookie(AUTH_COOKIE_NAME, jwt, {
