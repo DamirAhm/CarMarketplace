@@ -11,30 +11,33 @@ export class ViewsService {
       return null;
     }
 
-    const viewOfUser = await this.prismaService.view.findMany({
-      where: {
-        advertismentId,
-        userId: user.id,
-      },
-    });
-
-    if (viewOfUser.length) {
-      return;
-    }
-
-    return this.prismaService.view.create({
-      data: {
-        user: {
-          connect: {
-            id: user.id,
+    return this.prismaService.$transaction(
+      [
+        this.prismaService.view.upsert({
+          where: {
+            advertismentId_userId: {
+              advertismentId,
+              userId: user.id,
+            },
           },
-        },
-        advertisement: {
-          connect: {
-            id: advertismentId,
+          update: {},
+          create: {
+            user: {
+              connect: {
+                id: user.id,
+              },
+            },
+            advertisement: {
+              connect: {
+                id: advertismentId,
+              },
+            },
           },
-        },
+        }),
+      ],
+      {
+        isolationLevel: 'Serializable',
       },
-    });
+    );
   }
 }

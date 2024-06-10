@@ -1,11 +1,13 @@
 import { getCar } from "./api/getCar";
-import { Box, Container, ImageList, ImageListItem, Paper, Typography } from "@mui/material";
-import { Image } from "../../../../components/Image";
+import { Box, Container, Grid, Paper, Typography } from "@mui/material";
 import React from "react";
 import StarIcon from "@mui/icons-material/Star";
 import { FeedbackSection } from "./components/FeedbackSection";
+import { ImageGroup } from "../../../../components/ImageGroup/ImageGroup";
+import { AdvertismentComponent } from "../../components/AdvertisementComponent";
 
 export default async function CarPage({ params: { carId } }: { params: { carId: string } }) {
+  const car = await getCar(carId);
   const {
     images,
     brand,
@@ -17,7 +19,7 @@ export default async function CarPage({ params: { carId } }: { params: { carId: 
     transmission,
     feedbacks,
     advertisements
-  } = await getCar(carId);
+  } = car;
 
   const rating = feedbacks.length ? feedbacks.reduce((acc, c) => acc + c.rating, 0) / feedbacks.length : null;
 
@@ -25,13 +27,7 @@ export default async function CarPage({ params: { carId } }: { params: { carId: 
     <Box padding={"40px 0"} width={"100%"} display={"flex"} justifyContent={"center"} alignItems={"center"}>
       <Paper>
         <Box width={"1440px"} padding={"30px"}>
-          <ImageList sx={{ width: "100%", height: 500 }} cols={3} rowHeight={500}>
-            {images.map((item) => (
-              <ImageListItem key={item}>
-                <Image size={480} id={item} />
-              </ImageListItem>
-            ))}
-          </ImageList>
+          <ImageGroup images={images} />
           <Box height={"20px"} />
           <Typography gutterBottom variant="h4" display={"flex"} alignItems={"bottom"}>
             {brand} {model}&nbsp;&nbsp;<StarIcon fontSize={"large"} />&nbsp;{rating ?? "?"}
@@ -49,11 +45,18 @@ export default async function CarPage({ params: { carId } }: { params: { carId: 
             {body && <>Кузов - {body} <br /></>}
           </Typography>
           <Box height={"20px"} />
-          <Typography gutterBottom variant="h6">
-            Сейчас на сайте {advertisements} объявлений о продаже такой машины
-          </Typography>
-          <Box height={"30px"} />
           <FeedbackSection carId={carId} initialFeedbacks={feedbacks} />
+          <Box height={"30px"} />
+          <Typography gutterBottom variant="h6">
+            Сейчас на сайте {advertisements.length} объявлений о продаже такой машины
+          </Typography>
+          <Grid container rowGap={"20px"}>
+            {advertisements.map(ad =>
+              <Grid item xs={3} key={ad.id}>
+                <AdvertismentComponent {...ad} car={car} />
+              </Grid>
+            )}
+          </Grid>
         </Box>
       </Paper>
     </Box>

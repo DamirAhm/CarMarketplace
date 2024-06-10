@@ -1,7 +1,7 @@
 "use client";
 import { AppBar, Button, Container, IconButton, Menu, MenuItem, styled, Toolbar, Typography } from "@mui/material";
 import { reatomComponent, useAtom } from "@reatom/npm-react";
-import { userAtom, userRequestedAtom } from "../../../atoms/user.atom";
+import { userAtom } from "../../../atoms/user.atom";
 import { reatomAsync } from "@reatom/async";
 import { logout } from "./api/logout";
 import Link from "next/link";
@@ -13,6 +13,7 @@ import { Avatar, Flex, Space } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { getImageUrl } from "../../../utils/getImageUrl";
 import { SUPPORT_USER_LOGIN } from "../../../../../common/constants/ServiceUser";
+import { UserRole } from "../../../../../common/constants/UserRole";
 
 const fetchLogout = reatomAsync(async (ctx) => {
   await logout();
@@ -26,7 +27,6 @@ const WhiteButton = styled(Button)({
 
 export const Header = reatomComponent(({ ctx }) => {
   const [user] = useAtom(userAtom);
-  const [userRequested] = useAtom(userRequestedAtom);
   const [opened, setOpened] = useState(false);
 
   const handleOpen = () => {
@@ -55,7 +55,7 @@ export const Header = reatomComponent(({ ctx }) => {
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
         <Typography variant="h6">
           <Link href={"/"}>
-            Авто
+            ИжГТУ Автомобили
           </Link>
         </Typography>
         <Space size={"large"}>
@@ -79,6 +79,13 @@ export const Header = reatomComponent(({ ctx }) => {
               Поддержка
             </Typography>
           </Link>
+          {user?.role === UserRole.Admin &&
+            <Link href={`/advertisements/approve`}>
+              <Typography variant="subtitle1" color={"white"}>
+                Проверка объявлений
+              </Typography>
+            </Link>
+          }
         </Space>
         {user ? (
             <div>
@@ -117,7 +124,7 @@ export const Header = reatomComponent(({ ctx }) => {
               </Link>
             </Flex>
             : null
-            }
+          }
           </>
         }
       </Toolbar>

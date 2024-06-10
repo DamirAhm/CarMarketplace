@@ -31,13 +31,13 @@ export const FavoriteButton: React.FC<Props> = reatomComponent(({ ctx, onChange,
   };
 
   useEffect(() => {
-    const isFavoriteByDefault = !!favorites.find(({ userId }) => userId === user?.id);
+    const isFavoriteByDefault = !!favorites?.find(({ userId }) => userId === user?.id);
 
     setIsFavorite(isFavoriteByDefault);
   }, [user, favorites]);
 
 
-  return <Button size={"large"} onClick={handleClick}>
+  return <Button style={{ height: "50px" }} size={"large"} onClick={handleClick}>
     {
       isFavorite ? <FavoriteIcon fontSize={"large"} color={"error"} /> :
         <FavoriteBorderIcon fontSize={"large"} color={"error"} />

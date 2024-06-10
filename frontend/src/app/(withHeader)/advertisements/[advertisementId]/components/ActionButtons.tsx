@@ -10,12 +10,13 @@ import { deleteAdvertisement } from "../../../(withUser)/profile/advertisements/
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { EditOutlined } from "@ant-design/icons";
+import { UserRole } from "../../../../../../../common/constants/UserRole";
 
 type Props = {
   creatorId: string;
   favorites: Favorite[],
   advertisementId: string;
-  onChangeFavorite: (favorite: boolean) => void;
+  onChangeFavorite?: (favorite: boolean) => void;
   compact?: boolean;
 }
 
@@ -34,10 +35,10 @@ export const ActionButtons: React.FC<Props> = reatomComponent(({
     return null;
   }
 
-  const isMine = user.id === creatorId;
+  const isMine = user.id === creatorId || user.role === UserRole.Admin;
 
   const handleChangeFavorite = (favorite: boolean) => {
-    onChangeFavorite(favorite);
+    onChangeFavorite?.(favorite);
   };
 
   if (!isMine) {

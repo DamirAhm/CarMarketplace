@@ -15,6 +15,7 @@ import { AdvertismentsService } from './advertisments.service';
 import { AuthorizedGuard } from '../guards/authorized.guard';
 import { SearchAdvertismentsDto } from './dto/SearchAdvertisments.dto';
 import { EditAdvertismentDto } from './dto/EditAdvertisment.dto';
+import { RejectAdvertisementDto } from './dto/RejectAdvertisement.dto';
 
 @Controller('advertisments')
 export class AdvertismentsController {
@@ -43,6 +44,29 @@ export class AdvertismentsController {
     );
   }
 
+  @Put('/approve/:advertismentId')
+  @UseGuards(AuthorizedGuard)
+  approveAdvertisment(
+    @User() user: UserModel,
+    @Param('advertismentId') advertismentId: string,
+  ) {
+    return this.advertismentService.approveAdvertisement(user, advertismentId);
+  }
+
+  @Put('/reject/:advertismentId')
+  @UseGuards(AuthorizedGuard)
+  rejectAdvertisment(
+    @User() user: UserModel,
+    @Param('advertismentId') advertismentId: string,
+    @Body() body: RejectAdvertisementDto,
+  ) {
+    return this.advertismentService.rejectAdvertisement(
+      user,
+      advertismentId,
+      body,
+    );
+  }
+
   @Post('/search')
   getAdvertisments(@Body() body: SearchAdvertismentsDto) {
     return this.advertismentService.getAdvertisments(body);
@@ -51,6 +75,11 @@ export class AdvertismentsController {
   @Get('/recommendations')
   getRecommendations() {
     return this.advertismentService.getRecommendations();
+  }
+
+  @Get('/unapproved')
+  getUnapproved() {
+    return this.advertismentService.getUnapproved();
   }
 
   @UseGuards(AuthorizedGuard)

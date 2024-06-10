@@ -7,7 +7,7 @@ import { hashPassword } from '../utils/hashPassword';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
-import { AUTH_COOKIE_NAME } from './constants';
+import { AUTH_COOKIE_NAME } from '../../../common/constants/AuthCookie';
 import { compare } from 'bcrypt';
 import { IRegister } from '../../../common/interfaces/auth/register.interface';
 import { IAuth } from '../../../common/interfaces/auth/auth.interface';
@@ -21,7 +21,7 @@ export class AuthService {
 
   async register(
     response: Response,
-    { email, password, phoneNumber, ...rest }: IRegister,
+    { email, password, phoneNumber, login }: IRegister,
   ) {
     const userWithSameEmail = await this.prismaService.user.findUnique({
       where: {
@@ -49,10 +49,9 @@ export class AuthService {
 
     const { avatar, ...user } = await this.prismaService.user.create({
       data: {
-        ...rest,
         phoneNumber,
         email,
-        login: email.split('@')[0],
+        login,
         password: hashedPassword,
       },
       include: {
@@ -73,7 +72,7 @@ export class AuthService {
   }
 
   async login(response: Response, { email, password }: IAuth) {
-    const { avatar, ...user } = await this.prismaService.user.findUnique({
+    const user = await this.prismaService.user.findUnique({
       where: {
         email,
       },
@@ -88,14 +87,16 @@ export class AuthService {
 
     const isPasswordsIdentical = await compare(password, user?.password || '');
 
-    if (!isPasswordsIdentical) {
+    if (!user || !isPasswordsIdentical) {
       throw new UnauthorizedException('Неверный email или пароль');
     }
+
+    const { avatar, ...rest } = user;
 
     await this.setAuthCookie(response, email);
 
     return {
-      ...user,
+      ...rest,
       avatar: avatar[0]?.id,
     };
   }

@@ -48,7 +48,7 @@ export const ImageField: React.FC<Props> = ({ name, display = true, RenderElemen
       setIsLoading(true);
       const fileIds = await createImage(files);
       setIsLoading(false);
-      field.onChange([...fileIds, ...field.value]);
+      field.onChange(field.value ? [...fileIds, ...field.value] : fileIds);
     }
   };
 

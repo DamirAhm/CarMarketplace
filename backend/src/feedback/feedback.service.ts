@@ -4,6 +4,17 @@ import { ICreateFeedback } from '../../../common/interfaces/feedback/createFeedb
 import { User } from '@prisma/client';
 import { CreateReactionDto } from './dto/createReaction.dto';
 
+const include = {
+  reactions: true,
+  imageIds: true,
+  comments: true,
+  user: {
+    include: {
+      avatar: true,
+    },
+  },
+};
+
 @Injectable()
 export class FeedbackService {
   constructor(private readonly prismaService: PrismaService) {}
@@ -13,16 +24,7 @@ export class FeedbackService {
       where: {
         carId,
       },
-      include: {
-        reactions: true,
-        imageIds: true,
-        comments: true,
-        user: {
-          include: {
-            avatar: true,
-          },
-        },
-      },
+      include,
     });
 
     return feedbacks.map(({ imageIds, user, ...rest }) => ({
@@ -36,7 +38,12 @@ export class FeedbackService {
   }
 
   async createFeedback(user: User, { carId, ...body }: ICreateFeedback) {
-    return this.prismaService.feedback.create({
+    const {
+      user: feedbackUser,
+      imageIds,
+      ...feedback
+    } = await this.prismaService.feedback.create({
+      include,
       data: {
         user: {
           connect: {
@@ -51,6 +58,15 @@ export class FeedbackService {
         ...body,
       },
     });
+
+    return {
+      ...feedback,
+      imageIds: imageIds.map(({ id }) => id),
+      user: {
+        ...feedbackUser,
+        avatar: feedbackUser.avatar,
+      },
+    };
   }
 
   async addReaction(user: User, { feedbackId, opinion }: CreateReactionDto) {

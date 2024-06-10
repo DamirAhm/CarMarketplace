@@ -6,6 +6,7 @@ import { MessageWithIncludes } from "../api/getChats";
 import { reatomComponent } from "@reatom/npm-react";
 import { userAtom } from "../../../../../atoms/user.atom";
 import { Avatar } from "../../../../../components/Avatar";
+import { ADMIN_AVATAR, ADMIN_USER_ID } from "../../../../../../../common/constants/ServiceUser";
 
 type Props = Omit<MessageWithIncludes, "createdAt"> & {
   createdAt: Date | null;
@@ -34,7 +35,7 @@ export const ChatPreview: React.FC<Props> = reatomComponent(({
       <Box padding={"5px"}>
         <Col>
           <Row>
-            <Avatar avatar={receiver?.avatar} />
+            <Avatar avatar={receiver.id === ADMIN_USER_ID ? ADMIN_AVATAR : receiver?.avatar} />
             <Box width={"20px"} />
             <Typography variant={"h6"} color={"gray"}>{receiver.login}</Typography>
           </Row>

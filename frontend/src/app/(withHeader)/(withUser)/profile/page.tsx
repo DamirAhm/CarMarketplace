@@ -37,7 +37,7 @@ const ProfilePage = reatomComponent(({ ctx }) => {
       methods.setError("prevPassword", { message: "Введите предыдущий пароль" });
     }
 
-    data.avatar = (avatar as unknown as any[])[0];
+    data.avatar = avatar;
 
     try {
       await updateUser(data);

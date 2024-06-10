@@ -8,6 +8,10 @@ import { User } from '@prisma/client';
 import { ICreateAdvertisment } from '../../../common/interfaces/advertisments/createAdvertisment.interface';
 import { SearchAdvertismentsDto } from './dto/SearchAdvertisments.dto';
 import { IEditAdvertisment } from '../../../common/interfaces/advertisments/editAdvertisment.interface';
+import { UserRole } from '../../../common/constants/UserRole';
+import { AdvertisementStatus } from '../../../common/constants/AdvertisementStatus';
+import { IRejectAdvertisementInterface } from '../../../common/interfaces/advertisments/approve/rejectAdvertisement.interface';
+import { ADMIN_USER_ID } from '../../../common/constants/ServiceUser';
 
 const include = {
   imageIds: true,
@@ -62,6 +66,7 @@ export class AdvertismentsService {
       where: {
         currency,
         description,
+        status: AdvertisementStatus.Approved,
         cost: {
           lte: costTo,
           gte: cost,
@@ -97,6 +102,9 @@ export class AdvertismentsService {
   async getRecommendations() {
     const ads = await this.prismaService.advertisment.findMany({
       include,
+      where: {
+        status: AdvertisementStatus.Approved,
+      },
       orderBy: {
         createdAt: 'desc',
       },
@@ -207,8 +215,10 @@ export class AdvertismentsService {
         throw new BadRequestException('Объявление не найдено');
       });
 
-    if (ad.userId !== user.id) {
-      throw new ForbiddenException('Объявление вам не принадлежит');
+    if (ad.userId !== user.id && user.role !== UserRole.Admin) {
+      throw new ForbiddenException(
+        'Не достаточно прав для изменения объявления',
+      );
     }
 
     const { imageIds: oldImages } = ad;
@@ -232,11 +242,6 @@ export class AdvertismentsService {
         currency,
         mileage,
         description,
-        creator: {
-          connect: {
-            id: user.id,
-          },
-        },
         car: {
           connectOrCreate: {
             where: {
@@ -262,6 +267,95 @@ export class AdvertismentsService {
     });
   }
 
+  approveAdvertisement(user: User, advertisementId: string) {
+    if (user.role !== UserRole.Admin) {
+      throw new ForbiddenException(
+        'Недостоточно прав для подтверждения объявления',
+      );
+    }
+
+    return this.prismaService.advertisment.update({
+      where: {
+        id: advertisementId,
+      },
+      data: {
+        status: AdvertisementStatus.Approved,
+      },
+    });
+  }
+
+  async rejectAdvertisement(
+    user: User,
+    advertisementId: string,
+    { comment }: IRejectAdvertisementInterface,
+  ) {
+    if (user.role !== UserRole.Admin) {
+      throw new ForbiddenException(
+        'Недостоточно прав для подтверждения объявления',
+      );
+    }
+
+    const creator = await this.prismaService.user.findFirst({
+      where: {
+        advertisments: {
+          some: {
+            id: advertisementId,
+          },
+        },
+      },
+    });
+
+    if (!creator) {
+      return;
+    }
+
+    await this.prismaService.message.create({
+      data: {
+        sender: {
+          connect: {
+            id: ADMIN_USER_ID,
+          },
+        },
+        receiver: {
+          connect: {
+            id: creator.id,
+          },
+        },
+        message: `
+          Ваше объявление с id - ${advertisementId} было отклонено со следующим комментарием: 
+          ${comment}.
+          По всем вопросам обращайтесь в поддержку сервиса.
+        `,
+      },
+    });
+
+    return this.prismaService.advertisment.update({
+      where: {
+        id: advertisementId,
+      },
+      data: {
+        status: AdvertisementStatus.Rejected,
+      },
+    });
+  }
+
+  async getUnapproved() {
+    const ads = await this.prismaService.advertisment.findMany({
+      include,
+      where: {
+        status: AdvertisementStatus.Pending,
+      },
+    });
+
+    return ads.map(({ creator, ...ad }) => ({
+      ...ad,
+      creator: {
+        ...creator,
+        avatar: creator.avatar[0]?.id,
+      },
+    }));
+  }
+
   async getUsersAdvertisements(user: User) {
     const ads = await this.prismaService.advertisment.findMany({
       where: {
@@ -283,7 +377,7 @@ export class AdvertismentsService {
       },
     });
 
-    if (ad.userId !== user.id) {
+    if (ad.userId !== user.id && user.role !== UserRole.Admin) {
       throw new ForbiddenException(
         'Не достаточно прав для удаления объявления',
       );

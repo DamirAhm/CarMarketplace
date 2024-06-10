@@ -29,7 +29,7 @@ export const AdsSection: React.FC<Props> = ({ recommendations }) => {
       }
     </Typography>
     <Box height={"20px"} />
-    <Grid container>
+    <Grid container rowGap={"20px"}>
       {(advertisments || recommendations)?.map(ad =>
         <Grid key={ad.id} xs={3} item><AdvertismentComponent key={ad.id} {...ad} /></Grid>
       )}

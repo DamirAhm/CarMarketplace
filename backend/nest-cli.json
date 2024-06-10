@@ -4,6 +4,12 @@
   "sourceRoot": "src",
   "entryFile": "./backend/src/main",
   "compilerOptions": {
-    "deleteOutDir": true
-  }
+    "deleteOutDir": true,
+    "plugins": [
+      "@nestjs/swagger"
+    ]
+  },
+  "typeFileNameSuffix": [
+    ".dto.ts"
+  ]
 }

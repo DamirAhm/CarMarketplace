@@ -35,7 +35,7 @@ const FavoritesPage = reatomComponent(({ ctx }) => {
         {ads?.length ?
           <>
             <Typography gutterBottom variant={"h4"} color={"black"}>Понравившиеся вам объявления</Typography>
-            <Grid container>
+            <Grid container rowGap={"20px"}>
               {(ads)?.map(ad =>
                 <Grid key={ad.id} xs={3} item><AdvertismentComponent onChangeFavorite={onChangeFavorite}
                                                                      key={ad.id} {...ad} /></Grid>

@@ -1,12 +1,17 @@
 import { axiosInstance } from "../../../../../utils/axiosInstance";
 import { Car, Comment, Feedback, Reaction } from "@prisma/client";
+import { AdWithIncludes } from "../../../components/AdvertisementComponent";
+import { UserWithAvatar } from "../../../../../atoms/user.atom";
 
-export type FeedbackWithIncludes = Feedback & { comments: Comment[], reactions: Reaction[] }
+export type CommentWithIncludes = Comment & {
+  user: UserWithAvatar
+}
+export type FeedbackWithIncludes = Feedback & { comments: CommentWithIncludes[], reactions: Reaction[] }
 
 export type CarWithIncludes = Car & {
   images: string[];
   feedbacks: FeedbackWithIncludes[],
-  advertisements: number;
+  advertisements: AdWithIncludes[];
 }
 
 export const getCar = (carId: string) => {

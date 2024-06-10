@@ -65,7 +65,7 @@ export class MessagesService {
         ],
       },
       orderBy: {
-        createdAt: 'desc',
+        createdAt: 'asc',
       },
       include,
     });
@@ -83,7 +83,7 @@ export class MessagesService {
 
     return Object.fromEntries(
       filteredMessages.map((mes) => [
-        mes.receiverId,
+        mes.senderId === user.id ? mes.receiverId : mes.senderId,
         {
           ...mes,
           receiverId: mes.senderId === user.id ? mes.receiverId : mes.senderId,

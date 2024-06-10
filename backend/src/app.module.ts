@@ -11,6 +11,7 @@ import { CarsModule } from './cars/cars.module';
 import { FavoritesModule } from './favorites/favorites.module';
 import { MessagesModule } from './messages/messages.module';
 import { ChatsGateway } from './chats/chats.gateway';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ChatsGateway } from './chats/chats.gateway';
     CarsModule,
     FavoritesModule,
     MessagesModule,
+    CommentsModule,
   ],
   controllers: [],
   providers: [ChatsGateway],

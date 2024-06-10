@@ -140,6 +140,8 @@ model Advertisment {
   car   Car    @relation(fields: [carId], references: [id], onDelete: Cascade)
   carId String
 
+  status String @default("pending")
+
   imageIds  Image[]
   views     View[]
   favorites Favorite[]

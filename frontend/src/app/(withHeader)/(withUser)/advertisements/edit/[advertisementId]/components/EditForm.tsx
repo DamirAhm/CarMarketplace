@@ -8,14 +8,26 @@ import { reatomComponent } from "@reatom/npm-react";
 import { AdvertismentsForm } from "../../../../../../../components/AdvertismentsForm";
 import { editAdvertisement } from "../api/editAdvertisement";
 import { useParams, useRouter } from "next/navigation";
+import { userAtom } from "../../../../../../../atoms/user.atom";
+import { AdWithIncludes } from "../../../../../components/AdvertisementComponent";
+import { UserRole } from "../../../../../../../../../common/constants/UserRole";
 
 type Props = {
-  defaultValues: ICreateAdvertisment;
+  advertisement: AdWithIncludes;
 }
 
-export const EditForm: React.FC<Props> = reatomComponent(({ defaultValues, ctx }) => {
+export const EditForm: React.FC<Props> = reatomComponent(({ advertisement, ctx }) => {
   const { advertisementId } = useParams() as { advertisementId: string };
   const router = useRouter();
+  const user = ctx.spy(userAtom);
+
+  if (!user) {
+    return null;
+  }
+
+  if (advertisement.creator.id !== user.id && user.role !== UserRole.Admin) {
+    router.push(`/advertisements/${advertisementId}`);
+  }
 
   const handleSubmit = async (data: ICreateAdvertisment) => {
     await editAdvertisement(advertisementId, data);
@@ -30,6 +42,9 @@ export const EditForm: React.FC<Props> = reatomComponent(({ defaultValues, ctx }
     submitText={"Изменить"}
     onSubmit={handleSubmit}
     onDecline={handleDecline}
-    defaultValues={defaultValues}
+    defaultValues={{
+      ...advertisement,
+      ...advertisement.car
+    } as ICreateAdvertisment}
   />;
 });

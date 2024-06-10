@@ -23,13 +23,26 @@ export class CarsService {
       include: {
         feedbacks: {
           include: {
-            comments: true,
+            comments: {
+              include: {
+                user: {
+                  include: {
+                    avatar: true,
+                  },
+                },
+              },
+            },
             reactions: true,
           },
         },
         advertisements: {
           include: {
-            _count: true,
+            imageIds: true,
+            favorites: {
+              include: {
+                user: true,
+              },
+            },
           },
         },
       },
@@ -38,7 +51,20 @@ export class CarsService {
     return {
       ...car,
       images: images.map(({ id }) => id),
-      advertisements: car.advertisements.length,
+      advertisements: car.advertisements.map((ad) => ({
+        ...ad,
+        imageIds: ad.imageIds.map(({ id }) => id),
+      })),
+      feedbacks: car.feedbacks.map((f) => ({
+        ...f,
+        comments: f.comments.map((c) => ({
+          ...c,
+          user: {
+            ...c.user,
+            avatar: c.user.avatar[0]?.id,
+          },
+        })),
+      })),
     };
   }
 }

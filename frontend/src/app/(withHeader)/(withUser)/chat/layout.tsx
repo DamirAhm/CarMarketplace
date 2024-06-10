@@ -29,7 +29,7 @@ const ChatLayout: React.FC<PropsWithChildren> = reatomComponent(({ ctx, children
         <Grid container height={"calc(100vh - 190px)"} gap={"70px"}>
           <Grid item xs={3}>
             <Col>
-              <Typography variant={"h4"} gutterBottom>Ваши чаты</Typography>
+              <Typography variant={"h5"} gutterBottom>Ваши чаты</Typography>
               <Box height={"20px"} />
               {user &&
                 <ChatPreview

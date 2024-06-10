@@ -28,18 +28,17 @@ export const Message: React.FC<PropsWithChildren<Props>> = ({
   const dateStr = `${hours}:${minutes}`;
 
   const items: MenuProps["items"] = [
-      {
-        label: <Button type={"link"}>Редактировать</Button>,
-        onClick: () => onInitChange(id),
-        key: "0"
-      },
-      {
-        label: <Button danger type={"link"}>Удалить</Button>,
-        onClick: () => onDelete(id),
-        key: "1"
-      }
-    ]
-  ;
+    {
+      label: <Button type={"link"}>Редактировать</Button>,
+      onClick: () => onInitChange(id),
+      key: "0"
+    },
+    {
+      label: <Button danger type={"link"}>Удалить</Button>,
+      onClick: () => onDelete(id),
+      key: "1"
+    }
+  ];
 
   return <Box width={"100%"} marginBottom={"20px"}>
     <Box className={styles.message} display={"flex"} alignItems={"center"}
@@ -53,7 +52,7 @@ export const Message: React.FC<PropsWithChildren<Props>> = ({
       <Paper sx={{ background: "#ddddff" }}>
         <Box minWidth={"100px"} maxWidth={"400px"} padding={"5px 10px"}>
           <Box display={"flex"} flexDirection={"column"}>
-            <Typography style={{ wordBreak: "break-all" }} variant={"subtitle1"}>
+            <Typography style={{ wordBreak: "break-word" }} variant={"subtitle1"}>
               {children}
             </Typography>
             <Box display={"flex"} alignSelf={"flex-end"}>

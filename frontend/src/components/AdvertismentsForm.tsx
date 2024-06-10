@@ -44,13 +44,15 @@ export const AdvertismentsForm: React.FC<Props> = ({
     methods.setValue("imageIds", images?.filter(im => im !== id));
   };
 
+  const models = ["1111 Ока", "2101", "2102", "2103", "2104", "2105", "2106", "2107", "2108", "2109", "21099", "2110", "2111", "2112", "2113", "2114", "2115", "2120 Надежда", "2121 (4x4)", "2131 (4x4)", "Granta", "Kalina", "Largus", "Niva", "Niva Legend", "Priora", "Vesta", "XRAY"];
+
   return <FormProvider {...methods}>
     <form onSubmit={handleSubmit}>
       <Box gap={"10px"} display={"flex"} flexDirection={"column"} padding={"20px"}>
         <Typography variant={"h6"} color={"black"}>Заполните информацию о выставляемой
           машине</Typography>
         <SelectField name={"brand"} label={"Марка *"} options={Brands} required />
-        <InputField name={"model"} label={"Модель"} required />
+        <SelectField name={"model"} label={"Модель"} options={models} required />
         <Box height={"10px"} />
         <Typography variant={"h6"} color={"black"}>Характеристики</Typography>
         <SelectField required name={"year"} label={"Год выпуска *"} options={Years} />

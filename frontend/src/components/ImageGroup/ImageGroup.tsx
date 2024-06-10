@@ -29,7 +29,7 @@ export const ImageGroup: React.FC<Props> = ({ images, onDelete }) => {
         </Space>;
       }
     }}>
-    <Flex style={{ overflowX: "auto", whiteSpace: "nowrap", gap: "10px" }}>
+    <Flex style={{ overflowX: "auto", whiteSpace: "nowrap", gap: "10px", maxWidth: "100%" }}>
       {images.map((item) => (
         onDelete ? <DeletableImage onDelete={onDelete} id={item} key={item}>
             <Image style={{ flexShrink: "0", width: "unset", borderRadius: "5px" }} src={getImageUrl(item)}
