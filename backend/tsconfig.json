@@ -20,5 +20,8 @@
     "lib": [
       "esnext"
     ]
-  }
+  },
+  "include": [
+    "../common/**/*.ts"
+  ]
 }
